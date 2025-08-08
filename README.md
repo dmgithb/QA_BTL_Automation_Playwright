@@ -862,4 +862,5 @@ We encourage feedback and contributions to make this framework better:
 
 **Happy Testing! 🎭**
 #   S m o k e   t e s t   t r i g g e r  
+ #   T r i g g e r   s m o k e   t e s t s   m a n u a l l y  
  
