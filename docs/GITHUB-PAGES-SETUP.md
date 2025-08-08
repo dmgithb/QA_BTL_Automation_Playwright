@@ -129,6 +129,46 @@ Once deployed successfully, you can access:
 
 ## 🔧 **Troubleshooting**
 
+### 🚨 **404 Error Fix - Step by Step**
+
+If you're seeing a 404 error when accessing `https://jibinjoyqa.github.io/btl-playwright-automation/`, follow these steps:
+
+#### **Step 1: Check GitHub Pages Settings** 🔍
+1. Go to: `https://github.com/jibinjoyqa/btl-playwright-automation/settings/pages`
+2. **Verify Source is set to "GitHub Actions"**
+3. **Check deployment status** - should show recent deployment
+
+#### **Step 2: Enable GitHub Pages** ⚙️
+If Pages is not enabled:
+```
+✅ Source: Select "GitHub Actions" (NOT "Deploy from a branch")
+✅ Click "Save"
+✅ Wait for the green checkmark
+```
+
+#### **Step 3: Check Workflow Permissions** 🔒
+1. Go to: `Settings → Actions → General`
+2. **Set Workflow permissions**:
+   ```
+   ✅ Read and write permissions
+   ✅ Allow GitHub Actions to create and approve pull requests
+   ```
+3. Click "Save"
+
+#### **Step 4: Trigger a Test Run** 🚀
+```bash
+# Create a small change to trigger workflow
+git add .
+git commit -m "trigger GitHub Pages deployment"
+git push origin main
+```
+
+#### **Step 5: Monitor Deployment** 👀
+1. Go to: `https://github.com/jibinjoyqa/btl-playwright-automation/actions`
+2. **Look for "Playwright Tests" workflow**
+3. **Check if "report" job completed successfully**
+4. **Look for "pages build and deployment" workflow** (this should appear automatically)
+
 ### Common Issues and Solutions
 
 #### Issue 1: "Pages build and deployment" workflow not found
@@ -141,11 +181,36 @@ permissions:
   id-token: write
 ```
 
-#### Issue 2: 404 error when accessing pages
-**Solution**: 
-1. Check if GitHub Pages is enabled in repository settings
-2. Verify the workflow completed successfully
-3. Wait 5-10 minutes for DNS propagation
+#### Issue 2: 404 error when accessing pages ⚠️ **YOUR CURRENT ISSUE**
+**Root Causes & Solutions**: 
+
+**A) GitHub Pages Not Enabled**
+```bash
+# Check: Go to Settings → Pages
+# Fix: Set Source to "GitHub Actions"
+# Wait: 5-10 minutes for activation
+```
+
+**B) No Successful Deployment Yet**
+```bash
+# Check: Actions tab for successful "report" job
+# Fix: Ensure workflow completes without errors
+# Verify: Look for green checkmark in workflow
+```
+
+**C) Content Not Generated**
+```bash
+# Check: Workflow logs for "Generate Allure report" step
+# Fix: Ensure tests are running and generating results
+# Debug: Look for allure-report folder in artifacts
+```
+
+**D) DNS Propagation Delay**
+```bash
+# Wait: 10-15 minutes after first successful deployment
+# Try: Hard refresh (Ctrl+F5) or incognito mode
+# Alternative: Try https://jibinjoyqa.github.io/btl-playwright-automation/index.html
+```
 
 #### Issue 3: Deployment succeeds but no content
 **Solution**: 
@@ -162,6 +227,65 @@ permissions:
 1. Go to Settings → Actions → General
 2. Set "Workflow permissions" to "Read and write permissions"
 3. Enable "Allow GitHub Actions to create and approve pull requests"
+
+### 🔬 **Debug Your Specific 404 Issue**
+
+#### **Immediate Checks** (Do these now):
+
+1. **Verify Pages Status**:
+   ```
+   URL: https://github.com/jibinjoyqa/btl-playwright-automation/settings/pages
+   
+   Should Show:
+   ✅ "Your site is published at https://jibinjoyqa.github.io/btl-playwright-automation/"
+   ✅ Source: GitHub Actions
+   ✅ Recent deployment timestamp
+   ```
+
+2. **Check Latest Workflow**:
+   ```
+   URL: https://github.com/jibinjoyqa/btl-playwright-automation/actions
+   
+   Look For:
+   ✅ "Playwright Tests" workflow with green checkmark
+   ✅ "pages build and deployment" workflow
+   ✅ Recent successful run
+   ```
+
+3. **Verify Deployment Artifacts**:
+   ```
+   In workflow artifacts, look for:
+   ✅ allure-report folder
+   ✅ index.html file
+   ✅ Non-empty report content
+   ```
+
+#### **Force Deployment** (Try this):
+
+```bash
+# Method 1: Push empty commit to trigger workflow
+git commit --allow-empty -m "force GitHub Pages deployment"
+git push origin main
+
+# Method 2: Modify a file to trigger
+echo "# Updated $(date)" >> README.md
+git add README.md
+git commit -m "trigger deployment - fix 404"
+git push origin main
+```
+
+#### **Alternative Access Methods** (While fixing):
+
+```bash
+# Try these URLs:
+1. https://jibinjoyqa.github.io/btl-playwright-automation/
+2. https://jibinjoyqa.github.io/btl-playwright-automation/index.html
+
+# If still 404, use GitHub Actions artifacts:
+1. Go to Actions → Latest run → Artifacts
+2. Download "playwright-report-*" 
+3. Extract and open index.html locally
+```
 
 ---
 

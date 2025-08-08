@@ -796,6 +796,117 @@ await expect.soft(loginPage.errorMessage).toHaveText(
 
 The framework includes automated CI/CD pipelines that run tests on every code change and provide comprehensive reporting.
 
+### 📊 **Viewing Test Results in GitHub**
+
+#### **Method 1: GitHub Actions Artifacts** 📦
+
+**Step 1: Navigate to Actions**
+```
+URL: https://github.com/jibinjoyqa/btl-playwright-automation/actions
+```
+
+**Step 2: Find Your Workflow Run**
+- Click on "Playwright Tests" workflow
+- Select the latest run (green ✅ = passed, red ❌ = failed)
+- Look for runs triggered by your commits
+
+**Step 3: View Job Results**
+- See matrix results for different browsers/OS combinations
+- Check individual job logs for detailed information
+- View execution times and success rates
+
+**Step 4: Download Test Artifacts**
+```
+Artifacts Section (bottom of workflow run):
+├── playwright-report-ubuntu-latest-chromium
+├── playwright-report-windows-latest-firefox  
+├── test-results-critical-chromium
+├── test-results-smoke-firefox
+└── allure-results-merged
+```
+
+**Step 5: Open Reports Locally**
+```bash
+# Download artifact ZIP file
+# Extract to local folder
+# Open the HTML report
+open playwright-report/index.html
+```
+
+#### **Method 2: GitHub Pages (Live Reports)** 🌐
+
+**Access Live Reports**:
+```
+Live URL: https://jibinjoyqa.github.io/btl-playwright-automation/
+```
+
+**Features Available**:
+- 📊 **Interactive Dashboard**: Real-time test metrics
+- 🔍 **Detailed Test Results**: Step-by-step execution details  
+- 📸 **Screenshots**: Failure screenshots with context
+- 🎬 **Videos**: Test execution recordings
+- 📈 **Trends**: Historical test performance
+- 📝 **Logs**: Detailed execution logs
+
+**Check Deployment Status**:
+```
+Go to: Repository Settings → Pages
+Status: Should show "Your site is published at..."
+```
+
+#### **Method 3: Workflow Summary View** 📋
+
+**Quick Results Overview**:
+1. Click on any workflow run
+2. View the summary dashboard showing:
+   - ✅ Passed tests count
+   - ❌ Failed tests count  
+   - ⏱️ Execution duration
+   - 🌐 Browser/OS matrix results
+
+#### **Method 4: Pull Request Integration** 🔄
+
+**Automatic PR Checks**:
+- Test results appear automatically on Pull Requests
+- See pass/fail status before merging
+- Click "Details" link to view full reports
+- Required status checks prevent merging failed tests
+
+### 🎯 **Understanding Report Contents**
+
+#### **HTML Report Features**:
+```
+📊 Test Dashboard
+├── 📈 Execution Summary (pass/fail/skip counts)
+├── ⏱️ Performance Metrics (execution times)
+├── 🌐 Browser Breakdown (results per browser)
+├── 📁 Test File Organization
+├── 🔍 Filtering Options (@critical, @smoke, @regression)
+└── 📱 Mobile-Friendly Interface
+```
+
+#### **Allure Report Features**:
+```
+📈 Advanced Analytics
+├── 🎯 Test Execution Trends
+├── 📊 Flaky Test Detection  
+├── ⏱️ Duration Analysis
+├── 🏷️ Category Breakdown (by tags)
+├── 📸 Rich Media (screenshots/videos)
+├── 📝 Step-by-Step Details
+└── 🔄 Historical Comparisons
+```
+
+#### **Artifact Contents**:
+```
+Downloaded Artifacts Include:
+├── 📄 playwright-report/ (HTML reports)
+├── 📸 test-results/ (screenshots, videos)
+├── 📊 allure-results/ (raw data)
+├── 📋 junit-results.xml (CI integration)
+└── 📝 execution.log (detailed logs)
+```
+
 #### Main Pipeline (`.github/workflows/playwright-cicd.yml`)
 
 \`\`\`yaml

@@ -132,18 +132,39 @@ export default defineConfig({
       grep: /@smoke/,
     },
 
-    // Commented out other browsers - Chrome only setup
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    //   dependencies: ['setup'],
-    // },
+    // ========================================
+    // MULTI-BROWSER PROJECTS
+    // ========================================
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+      dependencies: ['setup'],
+    },
 
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    //   dependencies: ['setup'],
-    // },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      dependencies: ['setup'],
+    },
+
+    // ========================================
+    // BROWSER-SPECIFIC CRITICAL TESTS
+    // ========================================
+    {
+      name: 'critical-firefox',
+      use: { ...devices['Desktop Firefox'] },
+      dependencies: ['setup'],
+      grep: /@critical/,
+      grepInvert: /@skip/,
+    },
+
+    {
+      name: 'critical-webkit',
+      use: { ...devices['Desktop Safari'] },
+      dependencies: ['setup'],
+      grep: /@critical/,
+      grepInvert: /@skip/,
+    }
 
     /* Test against mobile viewports. */
     // {

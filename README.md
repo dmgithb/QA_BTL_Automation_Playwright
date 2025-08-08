@@ -116,7 +116,7 @@ For comprehensive setup with detailed explanations, follow our [**Complete Team 
    # Edit .env file with your credentials:
    # TEST_USER_USERNAME=your_username
    # TEST_USER_PASSWORD=your_password
-   # BASE_URL=https://training.bt-ms.com/MAIN-STAGE/erp.php
+   # BASE_URL=
    ```
 
 3. **Run Tests**:
@@ -198,8 +198,8 @@ TEST_USER_USERNAME=your_username
 TEST_USER_PASSWORD=your_password
 
 # 🌐 Application URLs
-BASE_URL=https://training.bt-ms.com/MAIN-STAGE/erp.php
-API_BASE_URL=https://training.bt-ms.com/api/v1
+BASE_URL=
+API_BASE_URL=
 
 # ⚡ Test Execution Settings
 DEFAULT_TIMEOUT=30000
@@ -575,7 +575,7 @@ Configure these secrets in your GitHub repository settings:
 # Required Secrets
 TEST_USER_USERNAME=your_test_username
 TEST_USER_PASSWORD=your_test_password
-BASE_URL=https://training.bt-ms.com/MAIN-STAGE/erp.php
+BASE_URL=
 
 # Optional Notifications
 SLACK_WEBHOOK_URL=your_slack_webhook_url
@@ -861,6 +861,8 @@ We encourage feedback and contributions to make this framework better:
 ---
 
 **Happy Testing! 🎭**
-#   S m o k e   t e s t   t r i g g e r  
- #   T r i g g e r   s m o k e   t e s t s   m a n u a l l y  
+#   S m o k e   t e s t   t r i g g e r 
+ 
+ #   T r i g g e r   s m o k e   t e s t s   m a n u a l l y 
+ 
  

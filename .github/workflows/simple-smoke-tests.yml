@@ -1,0 +1,83 @@
+# 🚀 Simple Smoke Tests CI/CD Pipeline
+name: Simple Smoke Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser to run tests on'
+        required: true
+        default: 'chromium'
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+
+jobs:
+  simple-smoke-test:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps ${{ github.event.inputs.browser || 'chromium' }}
+
+    - name: Create environment file
+      run: |
+        echo "BASE_URL=https://training.bt-ms.com/MAIN-STAGE/erp.php" >> .env
+        echo "HEADLESS=true" >> .env
+        echo "CI_ENVIRONMENT=true" >> .env
+        echo "MAX_WORKERS=2" >> .env
+        echo "SCREENSHOT_MODE=only-on-failure" >> .env
+        echo "VIDEO_MODE=retain-on-failure" >> .env
+
+    - name: Run Smoke Tests
+      run: npx playwright test --grep "@smoke" --project=${{ github.event.inputs.browser || 'chromium' }}
+      env:
+        CI: true
+        ALLURE_RESULTS_DIR: allure-results
+
+    - name: Generate HTML Report
+      if: always()
+      run: |
+        # Use Playwright's built-in HTML reporter
+        npx playwright show-report reports/html-report --output=smoke-html-report || true
+
+    - name: Upload Simple Smoke Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: simple-smoke-report-${{ github.event.inputs.browser || 'chromium' }}-${{ github.run_number }}
+        path: |
+          reports/
+          smoke-html-report/
+        retention-days: 30
+
+    - name: Smoke Test Summary
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Smoke tests passed! All critical functionality is working."
+          echo "📊 Download the report artifacts to view detailed results."
+        else
+          echo "❌ Smoke tests failed! Critical issues detected."
+          echo "📊 Check artifacts for screenshots and detailed failure information."
+          exit 1
+        fi
