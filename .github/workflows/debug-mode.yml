@@ -1,0 +1,64 @@
+name: Debug Mode Tests (Slow Execution)
+on:
+  workflow_dispatch:
+    inputs:
+      test_file:
+        description: 'Specific test file to debug'
+        required: true
+        default: 'login.spec.ts'
+        type: string
+      slow_motion:
+        description: 'Slow motion delay (ms)'
+        required: false
+        default: '2000'
+        type: string
+
+jobs:
+  debug-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🚀 Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: 🔧 Install dependencies
+      run: |
+        npm ci
+        npx playwright install
+    
+    - name: 🐛 Run debug mode test
+      run: |
+        echo "🔍 Running test in debug mode with slow motion..."
+        echo "📁 Test file: ${{ github.event.inputs.test_file }}"
+        echo "⏱️ Slow motion: ${{ github.event.inputs.slow_motion }}ms"
+        
+        npx playwright test "${{ github.event.inputs.test_file }}" \
+          --headed \
+          --slowMo=${{ github.event.inputs.slow_motion }} \
+          --video=on \
+          --screenshot=on \
+          --workers=1 \
+          --timeout=60000 \
+          --reporter=line
+    
+    - name: 📊 Upload debug artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: debug-test-results
+        path: |
+          test-results/
+          playwright-report/
+        retention-days: 3
+    
+    - name: 📋 Debug Summary
+      if: always()
+      run: |
+        echo "🎥 Debug artifacts created:"
+        find test-results -name "*.webm" -o -name "*.png" | head -20

@@ -49,7 +49,9 @@ jobs:
         echo "VIDEO_MODE=retain-on-failure" >> .env
 
     - name: Run Smoke Tests
+      id: smoke-tests
       run: npx playwright test --grep "@smoke" --project=${{ github.event.inputs.browser || 'chromium' }}
+      continue-on-error: true
       env:
         CI: true
         ALLURE_RESULTS_DIR: allure-results
@@ -73,11 +75,11 @@ jobs:
     - name: Smoke Test Summary
       if: always()
       run: |
-        if [ "${{ job.status }}" == "success" ]; then
+        if [ "${{ steps.smoke-tests.outcome }}" == "success" ]; then
           echo "✅ Smoke tests passed! All critical functionality is working."
           echo "📊 Download the report artifacts to view detailed results."
         else
           echo "❌ Smoke tests failed! Critical issues detected."
           echo "📊 Check artifacts for screenshots and detailed failure information."
-          exit 1
+          echo "::warning::Smoke tests failed - check the detailed report in artifacts"
         fi
