@@ -1,28 +1,14 @@
-name: Test CI/CD Setup
+name: GitHub Actions Test
 
 on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:  # This allows manual triggering
+  workflow_dispatch:  # Manual triggering only
 
 jobs:
-  hello-world:
+  verify-setup:
     runs-on: ubuntu-latest
     steps:
     - name: 🚀 Checkout code
       uses: actions/checkout@v4
       
-    - name: 👋 Say Hello
-      run: |
-        echo "🎉 GitHub Actions is working!"
-        echo "Repository: ${{ github.repository }}"
-        echo "Branch: ${{ github.ref }}"
-        echo "Commit: ${{ github.sha }}"
-        
-    - name: 📋 List files
-      run: |
-        echo "📁 Repository contents:"
-        ls -la
-        
-    - name: ✅ Success
-      run: echo "✅ CI/CD setup is working correctly!"
+    - name: ✅ Verify GitHub Actions
+      run: echo "✅ GitHub Actions is working correctly!"

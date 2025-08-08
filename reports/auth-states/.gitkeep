@@ -1,0 +1,2 @@
+# This file ensures the auth-states directory is tracked by Git
+# Authentication states will be stored here for session reuse
