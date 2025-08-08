@@ -11,6 +11,8 @@ This framework includes a comprehensive documentation suite for team training an
 - **[⚡ Quick Reference Guide](./docs/QUICK-REFERENCE-GUIDE.md)** - Essential commands, code templates, common patterns, and troubleshooting
 - **[❓ Framework FAQ](./docs/FRAMEWORK-FAQ.md)** - Comprehensive Q&A covering all framework aspects from setup to advanced topics
 - **[🚀 GitHub Pages Setup](./docs/GITHUB-PAGES-SETUP.md)** - Complete guide to fix GitHub Pages deployment and access live test reports
+- **[📊 View Test Results](./docs/VIEW-TEST-RESULTS-GUIDE.md)** - Quick guide to access and understand test reports in GitHub
+- **[🎭 Test Commands Reference](./docs/PLAYWRIGHT-COMMANDS-REFERENCE.md)** - Complete reference for all test execution commands and browser projects
 
 > **🎯 New to the framework?** Start with the [Complete Team Guide](./docs/COMPLETE-TEAM-GUIDE.md) for comprehensive learning, or use the [Quick Reference Guide](./docs/QUICK-REFERENCE-GUIDE.md) for immediate productivity.
 
@@ -859,3 +861,5 @@ We encourage feedback and contributions to make this framework better:
 ---
 
 **Happy Testing! 🎭**
+#   S m o k e   t e s t   t r i g g e r  
+ 
