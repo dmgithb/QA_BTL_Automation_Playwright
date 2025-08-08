@@ -63,6 +63,7 @@ jobs:
       run: npx playwright test --project=${{ matrix.browser }} --grep "@smoke"
       env:
         CI: true
+        ALLURE_RESULTS_DIR: allure-results
 
     - name: Upload smoke test artifacts
       uses: actions/upload-artifact@v4
@@ -104,7 +105,14 @@ jobs:
     - name: Merge Allure results
       run: |
         mkdir -p merged-smoke-results
-        find . -name "allure-results" -type d -exec cp -r {}/* merged-smoke-results/ \; || true
+        # Check if any allure-results directories exist
+        if find . -name "allure-results" -type d | head -1 | grep -q .; then
+          find . -name "allure-results" -type d -exec cp -r {}/* merged-smoke-results/ \; || true
+        else
+          echo "No allure-results found, creating empty results"
+          mkdir -p merged-smoke-results
+          echo '{"uuid":"no-tests","name":"No Tests Found","status":"broken"}' > merged-smoke-results/no-tests.json
+        fi
 
     - name: Generate Smoke Test Report
       run: |
@@ -115,10 +123,12 @@ jobs:
     - name: Setup Pages (for smoke reports)
       uses: actions/configure-pages@v4
       if: github.ref == 'refs/heads/main'
+      continue-on-error: true
 
     - name: Upload Smoke Report to Pages
       uses: actions/upload-pages-artifact@v3
       if: github.ref == 'refs/heads/main'
+      continue-on-error: true
       with:
         path: ./smoke-allure-report
 
@@ -126,6 +136,7 @@ jobs:
       id: smoke-deployment
       uses: actions/deploy-pages@v4
       if: github.ref == 'refs/heads/main'
+      continue-on-error: true
 
     - name: Notify Smoke Test Results
       if: always()
