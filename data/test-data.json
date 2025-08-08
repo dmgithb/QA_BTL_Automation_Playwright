@@ -1,0 +1,188 @@
+{
+  "validUsers": [
+    {
+      "username": "jibin",
+      "password": "Jerrin@123",
+      "role": "administrator",
+      "description": "Valid admin user"
+    },
+    {
+      "username": "jibin",
+      "password": "Jerrin@123",
+      "role": "user",
+      "description": "Valid regular user"
+    },
+    {
+      "username": "manager",
+      "password": "manager123",
+      "role": "manager",
+      "description": "Valid manager user"
+    }
+  ],
+  "invalidUsers": [
+    {
+      "username": "invalid_user",
+      "password": "wrong_password",
+      "expectedError": "Invalid credentials",
+      "description": "Invalid username and password"
+    },
+    {
+      "username": "admin",
+      "password": "wrong_password",
+      "expectedError": "Invalid credentials",
+      "description": "Valid username with invalid password"
+    },
+    {
+      "username": "",
+      "password": "",
+      "expectedError": "Username and password are required",
+      "description": "Empty username and password"
+    }
+  ],
+  "testEnvironments": {
+    "staging": {
+      "baseUrl": "https://training.bt-ms.com/MAIN-STAGE/erp.php",
+      "apiUrl": "https://training.bt-ms.com/api/v1",
+      "timeout": 30000
+    },
+    "production": {
+      "baseUrl": "https://production.bt-ms.com/erp.php",
+      "apiUrl": "https://production.bt-ms.com/api/v1",
+      "timeout": 60000
+    }
+  },
+  "testData": {
+    "newUsers": [
+      {
+        "fullName": "Test User One",
+        "company": "Test Company Ltd",
+        "telephone": "+1234567890",
+        "department": "IT",
+        "accessPermission": "Full Access",
+        "username": "testuser1",
+        "email": "testuser1@test.com",
+        "sendingInstructionsEmail": "testuser1@test.com",
+        "password": "Complex1Pass!",
+        "confirmPassword": "Complex1Pass!",
+        "status": "Active",
+        "allowSystemGeneratedHBLs": "No",
+        "description": "Basic user creation test"
+      },
+      {
+        "fullName": "Jane Smith",
+        "company": "Bulktainer Logistics",
+        "telephone": "+44 1234 567890",
+        "department": "Commercial",
+        "accessPermission": "Full Access",
+        "username": "jsmith",
+        "email": "jane.smith@bulktainer.test",
+        "sendingInstructionsEmail": "jane.smith@bulktainer.test",
+        "password": "Secure2Word#",
+        "confirmPassword": "Secure2Word#",
+        "status": "Active",
+        "allowSystemGeneratedHBLs": "Yes",
+        "description": "Commercial department user"
+      },
+      {
+        "fullName": "Mike Johnson",
+        "company": "Test Corp",
+        "telephone": "+1987654321",
+        "department": "Operations",
+        "accessPermission": "Full Access",
+        "username": "mjohnson",
+        "email": "mike.johnson@testcorp.com",
+        "password": "Strong3Key$",
+        "confirmPassword": "Strong3Key$",
+        "status": "Inactive",
+        "allowSystemGeneratedHBLs": "No",
+        "description": "Inactive user creation test"
+      }
+    ],
+    "userValidationTests": [
+      {
+        "testCase": "Missing required fields",
+        "userData": {
+          "fullName": "",
+          "username": "",
+          "email": "",
+          "password": "",
+          "confirmPassword": ""
+        },
+        "expectedResult": "validation_error",
+        "description": "Should prevent submission with empty required fields"
+      },
+      {
+        "testCase": "Invalid email format",
+        "userData": {
+          "fullName": "Test User",
+          "username": "testuser",
+          "email": "invalid-email",
+          "password": "Valid4Pass!",
+          "confirmPassword": "Valid4Pass!"
+        },
+        "expectedResult": "validation_error",
+        "description": "Should validate email format"
+      },
+      {
+        "testCase": "Password mismatch",
+        "userData": {
+          "fullName": "Test User",
+          "username": "testuser",
+          "email": "test@test.com",
+          "password": "Valid5Pass!",
+          "confirmPassword": "Different6Key#"
+        },
+        "expectedResult": "validation_error",
+        "description": "Should validate password confirmation match"
+      }
+    ],
+    "departments": [
+      "BTD",
+      "BTT", 
+      "BTTM",
+      "Commercial",
+      "Cost Control",
+      "Finance",
+      "Fleet Management & Pricing",
+      "Group",
+      "HR",
+      "IT",
+      "Office",
+      "Operations",
+      "Procurement",
+      "QSSHE",
+      "Supernova Group"
+    ],
+    "accessPermissions": [
+      "Full Access"
+    ],
+    "company": {
+      "name": "Test Company Ltd",
+      "address": "123 Test Street",
+      "city": "Test City",
+      "zipCode": "12345",
+      "country": "Test Country"
+    },
+    "contact": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@test.com",
+      "phone": "+1234567890"
+    }
+  },
+  "configuration": {
+    "browser": {
+      "headless": false,
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "timeout": 30000
+    },
+    "reporting": {
+      "screenshots": true,
+      "videos": true,
+      "allureReports": true
+    }
+  }
+}

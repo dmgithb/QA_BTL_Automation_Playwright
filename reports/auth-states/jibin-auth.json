@@ -1,0 +1,35 @@
+{
+  "cookies": [
+    {
+      "name": "PHPSESSID",
+      "value": "ef658c84054cc1089b4b1b259e610508",
+      "domain": "training.bt-ms.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "user",
+      "value": "jibin",
+      "domain": "training.bt-ms.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "active_time",
+      "value": "2025-08-07%2007%3A51%3A29",
+      "domain": "training.bt-ms.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

@@ -1,0 +1,54 @@
+{
+  "validUsers": [
+    {
+      "username": "${TEST_USER_USERNAME}",
+      "password": "${TEST_USER_PASSWORD}",
+      "role": "administrator",
+      "description": "Valid admin user from environment"
+    },
+    {
+      "username": "${ADMIN_USERNAME}",
+      "password": "${ADMIN_PASSWORD}",
+      "role": "administrator",
+      "description": "Valid admin user"
+    },
+    {
+      "username": "${MANAGER_USERNAME}",
+      "password": "${MANAGER_PASSWORD}",
+      "role": "manager",
+      "description": "Valid manager user"
+    },
+    {
+      "username": "${REGULAR_USER_USERNAME}",
+      "password": "${REGULAR_USER_PASSWORD}",
+      "role": "user",
+      "description": "Valid regular user"
+    }
+  ],
+  "invalidUsers": [
+    {
+      "username": "invalid_user",
+      "password": "wrong_password",
+      "expectedError": "Invalid credentials",
+      "description": "Invalid username and password"
+    },
+    {
+      "username": "${TEST_USER_USERNAME}",
+      "password": "wrong_password",
+      "expectedError": "Invalid credentials",
+      "description": "Valid username with invalid password"
+    },
+    {
+      "username": "",
+      "password": "",
+      "expectedError": "Username and password are required",
+      "description": "Empty username and password"
+    }
+  ],
+  "testEnvironment": {
+    "baseUrl": "${BASE_URL}",
+    "emailDomain": "${DEFAULT_EMAIL_DOMAIN}",
+    "timeout": "${DEFAULT_TIMEOUT}",
+    "retryCount": "${RETRY_COUNT}"
+  }
+}

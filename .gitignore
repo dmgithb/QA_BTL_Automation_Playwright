@@ -1,0 +1,45 @@
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.production
+.env.staging
+.env.development
+
+# Test data with sensitive information
+**/sensitive-data/
+**/credentials/
+
+# Logs
+*.log
+logs/
+test-results/
+allure-results/
+allure-report/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+temp/
+*.tmp

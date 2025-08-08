@@ -1,0 +1,11 @@
+username,password,role,expectedResult,description
+admin,admin123,administrator,success,Valid admin login
+user1,user123,user,success,Valid user login
+manager,manager123,manager,success,Valid manager login
+invalid_user,wrong_pass,user,failure,Invalid credentials
+admin,wrong_pass,administrator,failure,Wrong password for admin
+,empty_pass,user,failure,Empty username
+test_user,,user,failure,Empty password
+admin@test,admin123,administrator,success,Email as username
+user.test,user123,user,success,Username with dot
+special$user,special123,user,success,Username with special character

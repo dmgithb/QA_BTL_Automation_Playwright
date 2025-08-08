@@ -1,0 +1,29 @@
+{
+  "testEnvironments": {
+    "staging": {
+      "baseUrl": "https://training.bt-ms.com/MAIN-STAGE/erp.php",
+      "apiUrl": "https://training.bt-ms.com/api/v1",
+      "timeout": 30000
+    },
+    "production": {
+      "baseUrl": "https://production.bt-ms.com/erp.php",
+      "apiUrl": "https://production.bt-ms.com/api/v1",
+      "timeout": 60000
+    }
+  },
+  "configuration": {
+    "browser": {
+      "headless": false,
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "timeout": 30000
+    },
+    "reporting": {
+      "screenshots": true,
+      "videos": true,
+      "allureReports": true
+    }
+  }
+}

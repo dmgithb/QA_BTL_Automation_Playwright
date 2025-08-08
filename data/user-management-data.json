@@ -1,0 +1,106 @@
+{
+  "newUsers": [
+    {
+      "fullName": "Test User One",
+      "company": "Test Company Ltd",
+      "telephone": "+1234567890",
+      "department": "IT",
+      "accessPermission": "Full Access",
+      "username": "testuser1",
+      "email": "testuser1@digitalmesh.com",
+      "sendingInstructionsEmail": "testuser1@digitalmesh.com",
+      "password": "Complex1Pass!",
+      "confirmPassword": "Complex1Pass!",
+      "status": "Active",
+      "allowSystemGeneratedHBLs": "No",
+      "description": "Basic user creation test"
+    },
+    {
+      "fullName": "Jane Smith",
+      "company": "Bulktainer Logistics",
+      "telephone": "+44 1234 567890",
+      "department": "Commercial",
+      "accessPermission": "Full Access",
+      "username": "jsmith",
+      "email": "jane.smith@digitalmesh.com",
+      "sendingInstructionsEmail": "jane.smith@digitalmesh.com",
+      "password": "Secure2Word#",
+      "confirmPassword": "Secure2Word#",
+      "status": "Active",
+      "allowSystemGeneratedHBLs": "Yes",
+      "description": "Commercial department user"
+    },
+    {
+      "fullName": "Mike Johnson",
+      "company": "Test Corp",
+      "telephone": "+1987654321",
+      "department": "Operations",
+      "accessPermission": "Full Access",
+      "username": "mjohnson",
+      "email": "mike.johnson@digitalmesh.com",
+      "password": "Strong3Key$",
+      "confirmPassword": "Strong3Key$",
+      "status": "Inactive",
+      "allowSystemGeneratedHBLs": "No",
+      "description": "Inactive user creation test"
+    }
+  ],
+  "userValidationTests": [
+    {
+      "testCase": "Missing required fields",
+      "userData": {
+        "fullName": "",
+        "username": "",
+        "email": "",
+        "password": "",
+        "confirmPassword": ""
+      },
+      "expectedResult": "validation_error",
+      "description": "Should prevent submission with empty required fields"
+    },
+    {
+      "testCase": "Invalid email format",
+      "userData": {
+        "fullName": "Test User",
+        "username": "testuser",
+        "email": "invalid-email",
+        "password": "Valid4Pass!",
+        "confirmPassword": "Valid4Pass!"
+      },
+      "expectedResult": "validation_error",
+      "description": "Should validate email format"
+    },
+    {
+      "testCase": "Password mismatch",
+      "userData": {
+        "fullName": "Test User",
+        "username": "testuser",
+        "email": "test@digitalmesh.com",
+        "password": "Valid5Pass!",
+        "confirmPassword": "Different6Key#"
+      },
+      "expectedResult": "validation_error",
+      "description": "Should validate password confirmation match"
+    }
+  ],
+  "departments": [
+    "BTD",
+    "BTT", 
+    "BTTM",
+    "Commercial",
+    "Cost Control",
+    "Finance",
+    "Fleet Management & Pricing",
+    "Group",
+    "HR",
+    "IT",
+    "Office",
+    "Operations",
+    "Procurement",
+    "QSSHE",
+    "Supernova Group"
+  ],
+  "accessPermissions": [
+    "Full Access"
+  ]
+}
