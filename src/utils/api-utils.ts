@@ -6,7 +6,7 @@ import { ConfigManager } from './config-manager';
  * API utility class for making HTTP requests
  */
 export class ApiUtils {
-  private apiContext: APIRequestContext;
+  private apiContext!: APIRequestContext;
   private logger: Logger;
   private baseURL: string;
 

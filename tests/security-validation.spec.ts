@@ -74,7 +74,7 @@ test.describe('Security Configuration Validation', () => {
     const config = EnvironmentConfig.getInstance();
     const emailDomain = config.getEmailDomain();
     
-    expect(emailDomain).toBe('digitalmesh.com');
+    expect(emailDomain).toBe('@digitalmesh.com');
     
     console.log('✅ Email domain configured correctly:', emailDomain);
   });

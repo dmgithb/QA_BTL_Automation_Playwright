@@ -1,7 +1,7 @@
 import { test, expect } from '../src/fixtures/test-fixtures';
 
 /**
- * 👥 Enhanced User Management Test Suite - Bulktainer ERP System
+ * 👥 Enhanced User Management Test Suite
  * 
  * Test Coverage:
  * - @critical: Core user management operations (2-3 minutes)
@@ -13,7 +13,7 @@ import { test, expect } from '../src/fixtures/test-fixtures';
  * 
  * Security Implementation: Environment variables, secure data patterns
  */
-test.describe('👥 Enhanced User Management - Bulktainer ERP System', () => {
+test.describe('👥 Enhanced User Management', () => {
 
   test.beforeEach(async ({ page }, testInfo) => {
     // Import test hooks for setup
@@ -32,7 +32,7 @@ test.describe('👥 Enhanced User Management - Bulktainer ERP System', () => {
   // ========================================
   test.describe('🔥 Critical Path Tests @critical @smoke', () => {
     
-    test('Navigate to Users Info via Core Data menu @navigation @critical', async ({ page }) => {
+    test('Navigate to Users Info via Core Data menu @navigation @critical', async ({ page, userManagementPage }) => {
       console.log('Test: Navigate to Users Info page');
       
       // Navigate to Users Info page
