@@ -67,8 +67,18 @@ jobs:
             echo "::error::Critical functionality issues detected"
           fi
 
+      - name: Check Teams Webhook
+        id: check-webhook
+        run: |
+          if [ -n "${{ secrets.TEAMS_WEBHOOK }}" ]; then
+            echo "webhook_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "webhook_available=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ Teams webhook not configured - skipping notification"
+          fi
+
       - name: Send Teams Notification
-        if: failure()
+        if: failure() && steps.check-webhook.outputs.webhook_available == 'true'
         uses: aliencube/microsoft-teams-actions@v0.8.0
         with:
           webhook_uri: ${{ secrets.TEAMS_WEBHOOK }}
