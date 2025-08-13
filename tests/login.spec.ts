@@ -430,8 +430,8 @@ test.describe('⚡ Performance & Accessibility @regression', () => {
     // THEN: End-to-end performance is acceptable
     logger.step(`THEN: Verify E2E performance - Total time: ${totalTime}ms`);
     expect(isLoginSuccessful).toBeTruthy();
-    expect(totalTime).toBeLessThan(15000); // Complete flow within 15 seconds
-    
+    expect(totalTime).toBeLessThan(14000); // Complete flow within 14 seconds
+
     logger.step(`✅ E2E Performance test passed: ${totalTime}ms total time`);
   });
 
