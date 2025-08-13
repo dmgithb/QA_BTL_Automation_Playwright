@@ -194,6 +194,16 @@ Access your test results:
 - **GitHub Pages**: Detailed Allure reports
 - **PR Comments**: Automated test summaries
 - **Notifications**: Slack/Teams alerts
+- **Artifacts**: Downloadable test results with HTML reports
+
+### 📦 Artifact Contents:
+Each test run produces downloadable artifacts containing:
+- **📁 test-results/**: Screenshots, videos, traces for failed tests
+- **📁 allure-results/**: Raw Allure report data
+- **📁 reports/**: 
+  - `html-report/`: Complete HTML report with embedded media
+  - `test-results.json`: Machine-readable test results
+  - `junit-results.xml`: JUnit XML for CI integration
 
 ## 🚀 Quick Start Commands
 
@@ -248,6 +258,12 @@ git push origin main
 - Verify GitHub Pages setup
 - Review Allure configuration
 - Check permissions
+
+**HTML reports missing from artifacts:**
+- ✅ Fixed: All workflows now include reports/ directory in artifacts
+- HTML reports are generated in reports/html-report/
+- Download artifacts to access complete HTML reports with screenshots and videos
+- Artifacts include: test-results/, allure-results/, and reports/ directories
 
 ## 📚 Additional Resources
 
