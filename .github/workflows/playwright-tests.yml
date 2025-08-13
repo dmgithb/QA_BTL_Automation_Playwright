@@ -395,7 +395,10 @@ jobs:
         
       - name: Merge all Allure results
         run: |
+          # Clean any existing results to prevent old data
+          rm -rf merged-results allure-report
           mkdir -p merged-results
+          
           echo "📋 Collecting Allure results from artifacts..."
           find artifacts/ -name "allure-results" -type d | while read dir; do
             if [ -d "$dir" ] && [ "$(ls -A "$dir")" ]; then
@@ -419,7 +422,26 @@ jobs:
             echo "🎭 Generating Allure report with $(ls merged-results/ | wc -l) result files..."
             allure generate merged-results --clean -o allure-report
             echo "✅ Allure report generated successfully"
+            
+            # Copy all test artifacts (screenshots, videos) to allure report directory
+            echo "📸 Copying test artifacts for GitHub Pages..."
+            mkdir -p allure-report/test-results
+            find artifacts/ -name "test-results" -type d | while read dir; do
+              if [ -d "$dir" ] && [ "$(ls -A "$dir")" ]; then
+                echo "✅ Copying artifacts from: $dir"
+                cp -r "$dir"/* allure-report/test-results/ 2>/dev/null || true
+              fi
+            done
+            
+            # Also copy any test-results from root
+            if [ -d "test-results" ] && [ "$(ls -A test-results)" ]; then
+              echo "✅ Copying root test-results"
+              cp -r test-results/* allure-report/test-results/ 2>/dev/null || true
+            fi
+            
+            echo "📊 Artifacts copied to allure-report/test-results/"
             ls -la allure-report/
+            ls -la allure-report/test-results/ 2>/dev/null || echo "No test-results directory"
           else
             echo "⚠️ No test results found - creating empty report"
             mkdir -p allure-report
