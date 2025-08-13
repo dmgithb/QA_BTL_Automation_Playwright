@@ -298,7 +298,9 @@ The framework includes GitHub Actions workflows for:
 
 - **[Framework FAQ](./docs/FRAMEWORK-FAQ.md)** - Frequently asked questions
 - **[Quick Reference](./docs/QUICK-REFERENCE-GUIDE.md)** - Command reference
-- **[CI/CD Setup](./docs/CICD-SETUP-GUIDE.md)** - CI/CD configuration guide
+- **[CI/CD Best Practices](./docs/CICD-BEST-PRACTICES.md)** - Comprehensive CI/CD guide
+- **[CI/CD Implementation](./docs/CICD-IMPLEMENTATION-GUIDE.md)** - Step-by-step setup
+- **[CI/CD Quick Reference](./docs/CICD-QUICK-REFERENCE.md)** - Commands and troubleshooting
 - **[Security Guide](./docs/SECURITY.md)** - Security best practices
 
 ## 🤝 Contributing
