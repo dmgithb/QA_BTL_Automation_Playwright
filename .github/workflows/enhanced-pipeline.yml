@@ -1,0 +1,470 @@
+# 🚀 Enhanced Playwright CI/CD Pipeline
+name: Playwright Tests - Enhanced Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run full regression tests nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - regression
+          - full
+          - performance
+      environment:
+        description: 'Environment to test against'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      browser:
+        description: 'Browser(s) to test'
+        required: true
+        default: 'chromium'
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all
+
+env:
+  NODE_VERSION: '18'
+  PLAYWRIGHT_VERSION: '1.40.0'
+
+jobs:
+  # 🔍 Pre-flight checks
+  validate:
+    name: Pre-flight Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should_run_tests: ${{ steps.changes.outputs.tests }}
+      test_suite: ${{ steps.determine-suite.outputs.suite }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Check for test-relevant changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            tests:
+              - 'src/**'
+              - 'tests/**'
+              - 'features/**'
+              - 'package*.json'
+              - 'playwright.config.ts'
+              - 'cucumber.config.js'
+              
+      - name: Determine test suite
+        id: determine-suite
+        run: |
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            echo "suite=full" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "suite=regression" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "suite=${{ github.event.inputs.test_suite }}" >> $GITHUB_OUTPUT
+          else
+            echo "suite=smoke" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Lint and type check
+        run: |
+          npm ci
+          npm run lint
+        continue-on-error: true
+
+  # ⚡ Fast feedback - Smoke tests
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: validate
+    if: needs.validate.outputs.should_run_tests == 'true'
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: ${{ github.event.inputs.browser == 'all' && fromJSON('["chromium", "firefox", "webkit"]') || fromJSON('["chromium"]') }}
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}-${{ matrix.browser }}
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install ${{ matrix.browser }} --with-deps
+        
+      - name: Setup environment
+        run: |
+          cp .env.example .env
+          echo "HEADLESS=true" >> .env
+          echo "CI=true" >> .env
+          echo "MAX_WORKERS=2" >> .env
+          
+      - name: Run smoke tests
+        run: npm run test:smoke -- --project=${{ matrix.browser }}
+        env:
+          BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
+          TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          
+      - name: Upload smoke test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-results-${{ matrix.browser }}
+          path: |
+            test-results/
+            allure-results/
+          retention-days: 7
+
+  # 🧪 Comprehensive testing - Regression tests
+  regression-tests:
+    name: Regression Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [validate, smoke-tests]
+    if: |
+      needs.validate.outputs.should_run_tests == 'true' && 
+      (needs.validate.outputs.test_suite == 'regression' || 
+       needs.validate.outputs.test_suite == 'full' ||
+       github.event_name == 'pull_request')
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}-${{ matrix.browser }}
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install Playwright browsers
+        run: npx playwright install ${{ matrix.browser }} --with-deps
+        
+      - name: Setup environment
+        run: |
+          cp .env.example .env
+          echo "HEADLESS=true" >> .env
+          echo "CI=true" >> .env
+          echo "MAX_WORKERS=2" >> .env
+          
+      - name: Run regression tests
+        run: npm run test:regression -- --project=${{ matrix.browser }}
+        env:
+          BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
+          TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          
+      - name: Upload regression test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: regression-results-${{ matrix.browser }}
+          path: |
+            test-results/
+            allure-results/
+          retention-days: 30
+
+  # 🎭 BDD/Cucumber tests
+  bdd-tests:
+    name: BDD Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [validate, smoke-tests]
+    if: |
+      needs.validate.outputs.should_run_tests == 'true' && 
+      (needs.validate.outputs.test_suite == 'full' || 
+       github.event_name == 'schedule')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+        
+      - name: Setup environment
+        run: |
+          cp .env.example .env
+          echo "HEADLESS=true" >> .env
+          echo "CI=true" >> .env
+          
+      - name: Run BDD tests
+        run: npm run bdd:critical
+        env:
+          BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
+          TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          
+      - name: Upload BDD test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bdd-results
+          path: |
+            reports/
+            allure-results/
+          retention-days: 30
+
+  # 📊 Performance tests
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [validate, smoke-tests]
+    if: |
+      needs.validate.outputs.should_run_tests == 'true' && 
+      (needs.validate.outputs.test_suite == 'performance' || 
+       needs.validate.outputs.test_suite == 'full' ||
+       github.event_name == 'schedule')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+        
+      - name: Setup environment
+        run: |
+          cp .env.example .env
+          echo "HEADLESS=true" >> .env
+          echo "CI=true" >> .env
+          
+      - name: Run performance tests
+        run: npm run test:extended -- --grep="@performance"
+        env:
+          BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
+          TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          
+      - name: Upload performance test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: performance-results
+          path: |
+            test-results/
+            allure-results/
+          retention-days: 30
+
+  # 📈 Generate and publish reports
+  publish-reports:
+    name: Publish Test Reports
+    runs-on: ubuntu-latest
+    needs: [smoke-tests, regression-tests, bdd-tests, performance-tests]
+    if: always() && (needs.smoke-tests.result != 'skipped' || needs.regression-tests.result != 'skipped')
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download all test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install Allure
+        run: npm install -g allure-commandline
+        
+      - name: Merge all Allure results
+        run: |
+          mkdir -p merged-results
+          find artifacts/ -name "allure-results" -type d -exec cp -r {}/* merged-results/ \; || true
+          
+      - name: Generate Allure report
+        run: |
+          allure generate merged-results --clean -o allure-report
+          
+      - name: Create test summary
+        run: |
+          echo "# 📊 Test Execution Summary" > test-summary.md
+          echo "" >> test-summary.md
+          echo "**Build**: ${{ github.run_number }}" >> test-summary.md
+          echo "**Commit**: ${{ github.sha }}" >> test-summary.md
+          echo "**Branch**: ${{ github.ref_name }}" >> test-summary.md
+          echo "**Trigger**: ${{ github.event_name }}" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          if [ "${{ needs.smoke-tests.result }}" == "success" ]; then
+            echo "✅ **Smoke Tests**: Passed" >> test-summary.md
+          else
+            echo "❌ **Smoke Tests**: Failed" >> test-summary.md
+          fi
+          
+          if [ "${{ needs.regression-tests.result }}" == "success" ]; then
+            echo "✅ **Regression Tests**: Passed" >> test-summary.md
+          elif [ "${{ needs.regression-tests.result }}" == "skipped" ]; then
+            echo "⏭️ **Regression Tests**: Skipped" >> test-summary.md
+          else
+            echo "❌ **Regression Tests**: Failed" >> test-summary.md
+          fi
+          
+          echo "" >> test-summary.md
+          echo "📈 [View Detailed Report](https://dmgithb.github.io/QA_BTL_Automation_Playwright/)" >> test-summary.md
+          
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+        if: github.ref == 'refs/heads/main'
+        
+      - name: Upload report to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: ./allure-report
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        if: github.ref == 'refs/heads/main'
+
+  # 🔔 Notifications
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [smoke-tests, regression-tests, bdd-tests, performance-tests, publish-reports]
+    if: always()
+    
+    steps:
+      - name: Determine overall status
+        id: status
+        run: |
+          if [[ "${{ needs.smoke-tests.result }}" == "failure" ]]; then
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=❌ Critical smoke tests failed!" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.regression-tests.result }}" == "failure" ]]; then
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "message=⚠️ Regression tests failed!" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.bdd-tests.result }}" == "failure" ]]; then
+            echo "status=warning" >> $GITHUB_OUTPUT
+            echo "message=⚠️ BDD tests failed!" >> $GITHUB_OUTPUT
+          elif [[ "${{ needs.performance-tests.result }}" == "failure" ]]; then
+            echo "status=warning" >> $GITHUB_OUTPUT
+            echo "message=📊 Performance tests failed!" >> $GITHUB_OUTPUT
+          else
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "message=✅ All tests passed!" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { status, message } = ${{ toJson(steps.status.outputs) }};
+            const body = `
+            ## 🎭 Playwright Test Results
+            
+            ${message}
+            
+            **Build**: ${{ github.run_number }}
+            **Commit**: ${{ github.sha }}
+            
+            ### Test Results Summary:
+            - **Smoke Tests**: ${{ needs.smoke-tests.result }}
+            - **Regression Tests**: ${{ needs.regression-tests.result }}
+            - **BDD Tests**: ${{ needs.bdd-tests.result }}
+            - **Performance Tests**: ${{ needs.performance-tests.result }}
+            
+            📊 [View Detailed Report](https://dmgithb.github.io/QA_BTL_Automation_Playwright/)
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  # 🧹 Cleanup
+  cleanup:
+    name: Cleanup Resources
+    runs-on: ubuntu-latest
+    needs: [publish-reports, notify]
+    if: always()
+    
+    steps:
+      - name: Clean up old artifacts
+        run: |
+          echo "🧹 Cleanup completed for build ${{ github.run_number }}"
+          echo "Artifacts are automatically cleaned based on retention policies"

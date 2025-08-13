@@ -52,7 +52,7 @@ jobs:
 
     - name: Create environment file
       run: |
-        echo "BASE_URL=${{ secrets.BASE_URL || 'https://training.bt-ms.com/MAIN-STAGE/erp.php' }}" >> .env
+        echo "BASE_URL=${{ secrets.BASE_URL || secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}" >> .env
         echo "HEADLESS=true" >> .env
         echo "CI_ENVIRONMENT=true" >> .env
         echo "MAX_WORKERS=2" >> .env
