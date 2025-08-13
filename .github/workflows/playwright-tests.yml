@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      should_run_tests: ${{ steps.changes.outputs.tests }}
+      should_run_tests: ${{ steps.should-run.outputs.should_run }}
       test_suite: ${{ steps.determine-suite.outputs.suite }}
       
     steps:
@@ -84,6 +84,20 @@ jobs:
               - 'package*.json'
               - 'playwright.config.ts'
               - 'cucumber.config.js'
+
+      - name: Determine if tests should run
+        id: should-run
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "🎯 Main branch - tests will always run"
+          elif [[ "${{ steps.changes.outputs.tests }}" == "true" ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            echo "✅ Test-relevant changes detected"
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+            echo "⏭️ No test-relevant changes - skipping tests"
+          fi
               
       - name: Determine test suite
         id: determine-suite
@@ -371,17 +385,46 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
       - name: Install Allure
         run: npm install -g allure-commandline
         
       - name: Merge all Allure results
         run: |
           mkdir -p merged-results
-          find artifacts/ -name "allure-results" -type d -exec cp -r {}/* merged-results/ \; || true
+          echo "📋 Collecting Allure results from artifacts..."
+          find artifacts/ -name "allure-results" -type d | while read dir; do
+            if [ -d "$dir" ] && [ "$(ls -A "$dir")" ]; then
+              echo "✅ Found results in: $dir"
+              cp -r "$dir"/* merged-results/ 2>/dev/null || true
+            fi
+          done
+          
+          # Also check for allure-results in root (from BDD tests)
+          if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
+            echo "✅ Found results in root allure-results"
+            cp -r allure-results/* merged-results/ 2>/dev/null || true
+          fi
+          
+          echo "📊 Total result files found: $(ls merged-results/ | wc -l)"
+          ls -la merged-results/ || echo "No results found"
           
       - name: Generate Allure report
         run: |
-          allure generate merged-results --clean -o allure-report
+          if [ "$(ls -A merged-results/)" ]; then
+            echo "🎭 Generating Allure report with $(ls merged-results/ | wc -l) result files..."
+            allure generate merged-results --clean -o allure-report
+            echo "✅ Allure report generated successfully"
+            ls -la allure-report/
+          else
+            echo "⚠️ No test results found - creating empty report"
+            mkdir -p allure-report
+            echo '<html><body><h1>No Test Results Found</h1><p>No test data available for this build.</p></body></html>' > allure-report/index.html
+          fi
           
       - name: Create test summary
         run: |
