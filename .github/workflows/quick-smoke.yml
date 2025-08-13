@@ -48,13 +48,27 @@ jobs:
           BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
           TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+      - name: Generate HTML Report
+        if: always()
+        run: |
+          echo "📊 Generating HTML report for quick smoke tests..."
+          if [ -d "reports/html-report" ]; then
+            echo "✅ HTML report directory exists"
+            ls -la reports/html-report/ || echo "Directory is empty"
+          else
+            echo "❌ HTML report directory not found"
+            mkdir -p reports/html-report
+          fi
           
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: quick-smoke-results
-          path: test-results/
+          path: |
+            test-results/
+            reports/
           retention-days: 3
           
       - name: Quick status
