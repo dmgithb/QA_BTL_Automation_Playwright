@@ -22,14 +22,12 @@ npm run allure:generate    # Generate Allure report
 npm run allure:serve       # Serve Allure report
 ```
 
-## GitHub Actions Triggers
+## GitHub Actions Workflows
 
-| Trigger | Tests Run | Duration | Purpose |
-|---------|-----------|----------|---------|
-| Push to main | Smoke | ~5 min | Fast feedback |
-| Pull Request | Smoke + Regression | ~15 min | Code quality |
-| Nightly (2 AM) | Full Suite | ~45 min | Comprehensive |
-| Manual Dispatch | Custom | Variable | On-demand |
+| Workflow | Trigger | Tests Run | Duration | Purpose |
+|----------|---------|-----------|----------|---------|
+| **Quick Smoke** | Push to main/develop | Smoke (Chromium) | ~5 min | Ultra-fast feedback |
+| **Playwright Tests** | PR, Schedule, Manual | Comprehensive | ~15-45 min | Full validation |
 
 ## Pipeline Status Indicators
 

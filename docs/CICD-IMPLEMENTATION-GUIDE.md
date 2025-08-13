@@ -89,17 +89,26 @@ test.describe('Performance Tests @extended @performance', () => {
 
 ## 🎭 Step 5: Choose Your Pipeline Strategy
 
-### Option A: Enhanced Pipeline (Recommended)
-- Complete coverage with smoke, regression, BDD, and performance tests
-- Smart test selection based on changes
-- Comprehensive reporting and notifications
+### Current Workflows:
 
-### Option B: Simple Pipeline
-- Basic smoke and regression tests
-- Faster execution for smaller teams
+#### **Quick Smoke Tests** (Recommended for fast feedback)
+- **Trigger**: Every push to main/develop
+- **Duration**: ~5 minutes
+- **Coverage**: Critical smoke tests (Chromium only)
+- **Purpose**: Ultra-fast feedback on core functionality
 
-### Option C: Hybrid Approach
-- Start with smoke tests, gradually add more complexity
+#### **Playwright Tests** (Comprehensive testing)
+- **Trigger**: Pull requests, scheduled (nightly), manual dispatch
+- **Duration**: 15-45 minutes (depending on selection)
+- **Coverage**: Smoke, regression, BDD, performance tests
+- **Browsers**: Chromium, Firefox, WebKit
+- **Purpose**: Complete validation and quality assurance
+
+### Pipeline Selection Guide:
+- **Small Teams**: Use both workflows as-is
+- **Large Teams**: Customize triggers based on team size
+- **High-Frequency Deploys**: Rely heavily on Quick Smoke
+- **Quality-First**: Emphasize comprehensive Playwright Tests
 
 ## 📈 Step 6: Monitor and Optimize
 

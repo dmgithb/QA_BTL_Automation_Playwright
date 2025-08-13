@@ -1,5 +1,5 @@
-# 🚀 Enhanced Playwright CI/CD Pipeline
-name: Playwright Tests - Enhanced Pipeline
+# 🎭 Playwright Test Automation Pipeline
+name: Playwright Tests
 
 on:
   push:
