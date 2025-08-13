@@ -9,8 +9,8 @@ dotenv.config();
  */
 export class ConfigManager {
   // Application URLs
-  static readonly BASE_URL = process.env.BASE_URL || 'https://training.bt-ms.com/MAIN-STAGE/erp.php';
-  static readonly API_BASE_URL = process.env.API_BASE_URL || 'https://training.bt-ms.com/api/v1';
+  static readonly BASE_URL = process.env.BASE_URL || 'https://your-app-url.com';
+  static readonly API_BASE_URL = process.env.API_BASE_URL || 'https://your-api-url.com/api/v1';
 
   // Test Configuration
   static readonly DEFAULT_TIMEOUT = parseInt(process.env.DEFAULT_TIMEOUT || '30000');

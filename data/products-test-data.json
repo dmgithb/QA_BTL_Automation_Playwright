@@ -1,0 +1,116 @@
+{
+  "validProducts": [
+    {
+      "productName": "Test Chemical Alpha",
+      "casNumber": "123-45-6",
+      "appearance": "White crystalline powder",
+      "specificGravity": "1.25",
+      "productType": "Product",
+      "businessType": "DED",
+      "unNumber": "1234",
+      "status": "P",
+      "description": "Valid product with all required fields"
+    },
+    {
+      "productName": "Test Solution Beta",
+      "casNumber": "789-01-2",
+      "appearance": "Clear colorless liquid",
+      "specificGravity": "0.98",
+      "productType": "Product",
+      "businessType": "IMO",
+      "unNumber": "5678",
+      "status": "A",
+      "description": "Valid product for IMO business type"
+    }
+  ],
+  "invalidProducts": [
+    {
+      "productName": "",
+      "casNumber": "123-45-6",
+      "appearance": "Test appearance",
+      "description": "Missing required product name",
+      "expectedError": "Product name is required"
+    },
+    {
+      "productName": "Invalid CAS Test",
+      "casNumber": "invalid-format",
+      "appearance": "Test appearance",
+      "description": "Invalid CAS number format",
+      "expectedError": "Invalid CAS number format"
+    },
+    {
+      "productName": "Negative SG Test",
+      "specificGravity": "-1.5",
+      "appearance": "Test appearance",
+      "description": "Negative specific gravity",
+      "expectedError": "Invalid specific gravity"
+    }
+  ],
+  "filterTestData": [
+    {
+      "filterType": "productName",
+      "filterValue": "Propanediol",
+      "expectedResults": 1,
+      "description": "Filter by exact product name"
+    },
+    {
+      "filterType": "casNumber",
+      "filterValue": "50-00-0",
+      "expectedResults": 1,
+      "description": "Filter by CAS number"
+    },
+    {
+      "filterType": "unNumber",
+      "filterValue": "1202",
+      "expectedResults": 1,
+      "description": "Filter by UN number"
+    },
+    {
+      "filterType": "productName",
+      "filterValue": "NonExistent123",
+      "expectedResults": 0,
+      "description": "Filter with no results"
+    }
+  ],
+  "edgeCaseProducts": [
+    {
+      "productName": "Unicode Test Продукт 测试",
+      "appearance": "Unicode character test",
+      "description": "Product with Unicode characters"
+    },
+    {
+      "productName": "Special!@#$%^&*()Characters",
+      "appearance": "Special character test",
+      "description": "Product with special characters"
+    },
+    {
+      "productName": "Very Long Product Name That Exceeds Normal Limits And Should Be Tested For Length Validation Because Some Systems Have Character Limits That Need To Be Respected",
+      "appearance": "Length test",
+      "description": "Product with very long name"
+    }
+  ],
+  "performanceTestData": {
+    "bulkFilterValues": [
+      "A", "B", "C", "Test", "Prop", "Acid", "Base", "Solution", "Chemical", "Product"
+    ],
+    "expectedResponseTime": 5000,
+    "maxConcurrentRequests": 5
+  },
+  "businessTypeConfig": {
+    "DED": {
+      "defaultStatus": "P",
+      "requiresHazardClass": true,
+      "defaultProductType": "Product"
+    },
+    "IMO": {
+      "defaultStatus": "A",
+      "requiresUNNumber": true,
+      "defaultProductType": "Service"
+    },
+    "RETAIL": {
+      "defaultStatus": "A",
+      "requiresSpecificGravity": false,
+      "defaultProductType": "Product"
+    }
+  }
+}

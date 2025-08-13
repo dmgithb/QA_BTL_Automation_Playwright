@@ -1,6 +1,9 @@
 import { test as base, expect } from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
 import { UserManagementPage } from '../pages/user-management.page';
+import { CustomerListPage } from '../pages/customer-list.page';
+import { CustomerCreatePage } from '../pages/customer-create.page';
+import { CustomerEditPage } from '../pages/customer-edit.page';
 import { Logger } from '../utils/logger';
 import { TestDataManager } from '../utils/test-data-manager';
 import { TestDataFactory } from '../utils/test-data-factory';
@@ -10,6 +13,9 @@ import { ConfigManager } from '../utils/config-manager';
 export interface TestFixtures {
   loginPage: LoginPage;
   userManagementPage: UserManagementPage;
+  customerListPage: CustomerListPage;
+  customerCreatePage: CustomerCreatePage;
+  customerEditPage: CustomerEditPage;
   logger: Logger;
   testData: TestDataManager;
   dataFactory: typeof TestDataFactory;
@@ -30,6 +36,24 @@ export const test = base.extend<TestFixtures>({
   userManagementPage: async ({ page }, use) => {
     const userManagementPage = new UserManagementPage(page);
     await use(userManagementPage);
+  },
+
+  // Customer list page fixture
+  customerListPage: async ({ page }, use) => {
+    const customerListPage = new CustomerListPage(page);
+    await use(customerListPage);
+  },
+
+  // Customer create page fixture
+  customerCreatePage: async ({ page }, use) => {
+    const customerCreatePage = new CustomerCreatePage(page);
+    await use(customerCreatePage);
+  },
+
+  // Customer edit page fixture
+  customerEditPage: async ({ page }, use) => {
+    const customerEditPage = new CustomerEditPage(page);
+    await use(customerEditPage);
   },
 
   // Logger fixture

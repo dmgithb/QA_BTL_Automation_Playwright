@@ -18,7 +18,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? parseInt(process.env.RETRY_COUNT || '2') : parseInt(process.env.RETRY_COUNT || '0'),
+  retries: process.env.CI ? parseInt(process.env.RETRY_COUNT || '1') : parseInt(process.env.RETRY_COUNT || '0'),
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : parseInt(process.env.MAX_WORKERS || '4'),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -39,7 +39,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.BASE_URL || 'https://training.bt-ms.com/MAIN-STAGE/erp.php',
+    baseURL: process.env.BASE_URL || 'https://your-app-url.com',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',

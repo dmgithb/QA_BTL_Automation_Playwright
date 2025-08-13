@@ -62,6 +62,15 @@ jobs:
     - name: Run Smoke Tests Only
       run: npx playwright test --project=${{ matrix.browser }} --grep "@smoke"
       env:
+        # Security: Use GitHub Secrets for credentials
+        TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
+        TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+        ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        MANAGER_USERNAME: ${{ secrets.MANAGER_USERNAME }}
+        MANAGER_PASSWORD: ${{ secrets.MANAGER_PASSWORD }}
+        REGULAR_USER_USERNAME: ${{ secrets.REGULAR_USER_USERNAME }}
+        REGULAR_USER_PASSWORD: ${{ secrets.REGULAR_USER_PASSWORD }}
         CI: true
         ALLURE_RESULTS_DIR: allure-results
 

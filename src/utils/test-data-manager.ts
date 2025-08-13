@@ -14,9 +14,9 @@ export class TestDataManager {
   private static readonly DATA_DIR = path.join(process.cwd(), 'data');
 
   /**
-   * Read JSON test data file
+   * Read JSON test data file with environment variable resolution
    * @param fileName - Name of the JSON file (without extension)
-   * @returns Promise<any> - Parsed JSON data
+   * @returns Promise<any> - Parsed JSON data with resolved environment variables
    */
   static async readJsonData(fileName: string): Promise<any> {
     const filePath = path.join(this.DATA_DIR, `${fileName}.json`);
@@ -26,13 +26,30 @@ export class TestDataManager {
     }
 
     const jsonContent = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(jsonContent);
+    const resolvedContent = this.resolveEnvironmentVariables(jsonContent);
+    return JSON.parse(resolvedContent);
   }
 
   /**
-   * Read CSV test data file
+   * Resolve environment variables in string content
+   * @param content - String content with ${VARIABLE_NAME} placeholders
+   * @returns string - Content with resolved environment variables
+   */
+  private static resolveEnvironmentVariables(content: string): string {
+    return content.replace(/\$\{([^}]+)\}/g, (match, envVar) => {
+      const value = process.env[envVar];
+      if (value === undefined) {
+        console.warn(`Environment variable ${envVar} is not defined, using empty string`);
+        return '';
+      }
+      return value;
+    });
+  }
+
+  /**
+   * Read CSV test data file with environment variable resolution
    * @param fileName - Name of the CSV file (without extension)
-   * @returns Promise<any[]> - Array of parsed CSV rows
+   * @returns Promise<any[]> - Array of parsed CSV rows with resolved environment variables
    */
   static async readCsvData(fileName: string): Promise<any[]> {
     const filePath = path.join(this.DATA_DIR, `${fileName}.csv`);
@@ -43,11 +60,18 @@ export class TestDataManager {
 
     return new Promise((resolve, reject) => {
       const results: any[] = [];
-      fs.createReadStream(filePath)
+      const csvContent = fs.readFileSync(filePath, 'utf-8');
+      const resolvedContent = this.resolveEnvironmentVariables(csvContent);
+      
+      // Write resolved content to a temporary stream
+      const { Readable } = require('stream');
+      const stream = Readable.from([resolvedContent]);
+      
+      stream
         .pipe(csvParser())
-        .on('data', (data) => results.push(data))
+        .on('data', (data: any) => results.push(data))
         .on('end', () => resolve(results))
-        .on('error', (error) => reject(error));
+        .on('error', (error: any) => reject(error));
     });
   }
 
@@ -282,5 +306,41 @@ export class TestDataManager {
       isValid: missingVars.length === 0,
       missingVars
     };
+  }
+
+  /**
+   * Get login data for specific user type
+   * @param userType - Type of user (validUser, invalidUser, admin, manager, etc.)
+   * @returns Promise<any> - Login credentials and metadata
+   */
+  static async getLoginData(userType: string): Promise<any> {
+    const loginData = await this.readJsonData('login-data');
+    
+    if (userType === 'validUser' || userType === 'admin') {
+      return loginData.validUsers[0]; // Default to first valid user
+    }
+    
+    if (userType === 'invalidUser') {
+      return loginData.invalidUsers[0]; // Default to first invalid user
+    }
+    
+    // Look for specific user type in valid users
+    const user = loginData.validUsers.find((u: any) => u.role === userType);
+    if (user) {
+      return user;
+    }
+    
+    // Default to first valid user if not found
+    return loginData.validUsers[0];
+  }
+
+  /**
+   * Get user management test data
+   * @param dataType - Type of user data needed
+   * @returns Promise<any> - User management test data
+   */
+  static async getUserData(dataType: string = 'default'): Promise<any> {
+    const userData = await this.readJsonData('user-management-data');
+    return userData[dataType] || userData.users[0];
   }
 }

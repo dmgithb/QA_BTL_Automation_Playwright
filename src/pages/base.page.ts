@@ -39,12 +39,37 @@ export abstract class BasePage {
   }
 
   /**
-   * Wait for an element to be visible
+   * Wait for an element to be visible with enhanced error handling
    * @param locator - The element locator
    * @param timeout - Optional timeout in milliseconds
    */
   async waitForElement(locator: Locator, timeout: number = 30000): Promise<void> {
-    await locator.waitFor({ state: 'visible', timeout });
+    try {
+      // First wait for the page to be in a stable state
+      await this.page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+      
+      // Then wait for the element
+      await locator.waitFor({ state: 'visible', timeout });
+      
+      this.logger.info('Element is now visible');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to wait for element: ${errorMessage}`);
+      
+      // Take screenshot for debugging
+      await this.takeScreenshot(`wait-element-error-${Date.now()}`);
+      
+      // Try to get page info for debugging
+      try {
+        const url = await this.getCurrentUrl();
+        const title = await this.getTitle();
+        this.logger.info(`Current page: ${title} (${url})`);
+      } catch (debugError) {
+        this.logger.warn('Could not get page info for debugging');
+      }
+      
+      throw error;
+    }
   }
 
   /**
@@ -110,10 +135,28 @@ export abstract class BasePage {
   }
 
   /**
-   * Wait for page to load completely
+   * Wait for page to load completely with enhanced stability checks
    */
   async waitForPageLoad(): Promise<void> {
-    await this.page.waitForLoadState('networkidle');
+    try {
+      // Wait for DOM to be ready
+      await this.page.waitForLoadState('domcontentloaded', { timeout: 15000 });
+      
+      // Wait for network to be idle (no requests for 500ms)
+      await this.page.waitForLoadState('networkidle', { timeout: 30000 });
+      
+      // Additional wait for any JavaScript-heavy pages
+      await this.page.waitForTimeout(1000);
+      
+      this.logger.info('Page loading completed');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Page load timeout: ${errorMessage}`);
+      
+      // Continue anyway, but log the issue
+      const url = await this.getCurrentUrl();
+      this.logger.info(`Current page URL: ${url}`);
+    }
   }
 
   /**

@@ -56,8 +56,8 @@ export class EnvironmentConfig {
     // Environment-specific overrides using environment variables where possible
     const envConfigs = {
       staging: {
-        baseUrl: process.env.BASE_URL || 'https://training.bt-ms.com/MAIN-STAGE/erp.php',
-        apiUrl: process.env.API_BASE_URL || 'https://training.bt-ms.com/api/v1',
+        baseUrl: process.env.BASE_URL || 'https://your-app-url.com',
+        apiUrl: process.env.API_BASE_URL || 'https://your-api-url.com/api/v1',
         timeout: parseInt(process.env.DEFAULT_TIMEOUT || '30000')
       },
       production: {

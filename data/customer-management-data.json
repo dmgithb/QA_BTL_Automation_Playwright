@@ -1,0 +1,313 @@
+{
+  "validCustomers": {
+    "requiredFieldsOnly": {
+      "customerCode": "TEST001",
+      "team": "Operations",
+      "customerName": "Test Customer Ltd",
+      "address1": "123 Test Street",
+      "town": "Test Town",
+      "postCode": "TE5T 1NG",
+      "country": "GB",
+      "contact": "John Test",
+      "telephone": "01234567890",
+      "vatNo": "GB123456789",
+      "email": "test@example.com",
+      "eoriNumber": "GB123456789000",
+      "paymentTerms": "30 days",
+      "sageCode": "TEST001",
+      "bankAccount": "BTL UK",
+      "accountManager": "Test Manager"
+    },
+    "completeCustomer": {
+      "customerCode": "TEST002",
+      "team": "Operations",
+      "customerName": "Complete Test Customer Ltd",
+      "address1": "456 Complete Street",
+      "address2": "Suite 100",
+      "town": "Complete Town",
+      "state": "Test State",
+      "postCode": "CO5M PL8",
+      "country": "GB",
+      "contact": "Jane Complete",
+      "telephone": "01234567891",
+      "vatNo": "GB987654321",
+      "email": "complete@example.com",
+      "customerApprove": "Yes",
+      "eoriNumber": "GB987654321000",
+      "paymentTerms": "45 days",
+      "rechargeHandledByCCT": "Yes",
+      "billingOffice": "BTL UK",
+      "vatRate": "20.00",
+      "sageCode": "TEST002",
+      "bankAccount": "BTL UK",
+      "accountManager": "Complete Manager",
+      "invoiceDate": "First Activity Date",
+      "customerGroup": "Standard Customer",
+      "invoiceEmails": ["invoice@example.com", "billing@example.com"],
+      "creditInvoiceEmails": ["credit@example.com"]
+    },
+    "updateCustomer": {
+      "customerCode": "TEST003",
+      "team": "Americas",
+      "customerName": "Update Test Customer Inc",
+      "address1": "789 Update Avenue",
+      "town": "Update City",
+      "postCode": "UP5D 4T3",
+      "country": "US",
+      "contact": "Bob Update",
+      "telephone": "5551234567",
+      "vatNo": "US123456789",
+      "email": "update@example.com",
+      "eoriNumber": "US123456789000",
+      "paymentTerms": "60 days",
+      "sageCode": "TEST003",
+      "bankAccount": "BTL US",
+      "accountManager": "Update Manager"
+    }
+  },
+  "invalidCustomers": {
+    "emptyRequiredFields": {
+      "customerCode": "",
+      "team": "",
+      "customerName": "",
+      "address1": "",
+      "town": "",
+      "postCode": "",
+      "country": "",
+      "contact": "",
+      "telephone": "",
+      "vatNo": "",
+      "email": "",
+      "eoriNumber": "",
+      "paymentTerms": "",
+      "sageCode": "",
+      "bankAccount": "",
+      "accountManager": "",
+      "expectedError": "Please make sure you have entered all of the required/correct information below."
+    },
+    "duplicateCustomerCode": {
+      "customerCode": "EXISTING",
+      "team": "Operations",
+      "customerName": "Duplicate Code Customer",
+      "address1": "123 Duplicate Street",
+      "town": "Duplicate Town",
+      "postCode": "DU5P L1C",
+      "country": "GB",
+      "contact": "Duplicate Contact",
+      "telephone": "01234567892",
+      "vatNo": "GB111111111",
+      "email": "duplicate@example.com",
+      "eoriNumber": "GB111111111000",
+      "paymentTerms": "30 days",
+      "sageCode": "EXISTING",
+      "bankAccount": "BTL UK",
+      "accountManager": "Duplicate Manager",
+      "expectedError": "Customer code already exists"
+    },
+    "invalidEmail": {
+      "customerCode": "TEST004",
+      "team": "Operations",
+      "customerName": "Invalid Email Customer",
+      "address1": "123 Invalid Street",
+      "town": "Invalid Town",
+      "postCode": "IN5V 4L1D",
+      "country": "GB",
+      "contact": "Invalid Contact",
+      "telephone": "01234567893",
+      "vatNo": "GB222222222",
+      "email": "invalid-email-format",
+      "eoriNumber": "GB222222222000",
+      "paymentTerms": "30 days",
+      "sageCode": "TEST004",
+      "bankAccount": "BTL UK",
+      "accountManager": "Invalid Manager",
+      "expectedError": "Invalid email format"
+    },
+    "invalidVATNumber": {
+      "customerCode": "TEST005",
+      "team": "Operations",
+      "customerName": "Invalid VAT Customer",
+      "address1": "123 VAT Street",
+      "town": "VAT Town",
+      "postCode": "VA5T 1NG",
+      "country": "GB",
+      "contact": "VAT Contact",
+      "telephone": "01234567894",
+      "vatNo": "INVALID_VAT",
+      "email": "vat@example.com",
+      "eoriNumber": "GB333333333000",
+      "paymentTerms": "30 days",
+      "sageCode": "TEST005",
+      "bankAccount": "BTL UK",
+      "accountManager": "VAT Manager",
+      "expectedError": "Invalid VAT number format"
+    }
+  },
+  "searchData": {
+    "existingCustomers": [
+      {
+        "code": "232BARR",
+        "name": "232 Barren Springs LLC",
+        "town": "Houston",
+        "team": "Americas",
+        "country": "US"
+      },
+      {
+        "code": "247LOGIS",
+        "name": "24/7 Logistic Solutions B.V.",
+        "town": "HEINENOORD",
+        "team": "Europe DS",
+        "country": "NL"
+      },
+      {
+        "code": "AAKSWED",
+        "name": "AAK Sweden AB",
+        "town": "Karlshamn",
+        "team": "Europe DS",
+        "country": "SE"
+      }
+    ],
+    "searchTerms": {
+      "validCode": "232BARR",
+      "validName": "AAK Sweden",
+      "validTown": "Houston",
+      "nonExistentCode": "NOEXIST",
+      "nonExistentName": "Non Existent Customer",
+      "partialName": "Logistic",
+      "specialCharacters": "Test@#$%"
+    }
+  },
+  "updateScenarios": {
+    "nameUpdate": {
+      "originalName": "Original Customer Name",
+      "newName": "Updated Customer Name Ltd"
+    },
+    "contactUpdate": {
+      "originalContact": "Original Contact",
+      "newContact": "Updated Contact Person",
+      "originalTelephone": "01234567890",
+      "newTelephone": "09876543210",
+      "originalEmail": "original@example.com",
+      "newEmail": "updated@example.com"
+    },
+    "addressUpdate": {
+      "originalAddress1": "123 Original Street",
+      "newAddress1": "456 Updated Avenue",
+      "originalTown": "Original Town",
+      "newTown": "Updated City",
+      "originalPostCode": "OR1G 1N4L",
+      "newPostCode": "UP5D 4T3D"
+    },
+    "approvalToggle": {
+      "fromNoToYes": true,
+      "fromYesToNo": false
+    }
+  },
+  "edgeCases": {
+    "maxLengthFields": {
+      "customerCode": "MAXLENGTH123456789012345678901234567890",
+      "customerName": "Maximum Length Customer Name That Exceeds Normal Length Limits And Tests Field Validation",
+      "address1": "Maximum Length Address Line 1 That Exceeds Normal Length Limits And Tests Field Validation Rules",
+      "town": "Maximum Length Town Name That Exceeds Normal Length Limits",
+      "postCode": "MAXLENGTH123456789012345",
+      "contact": "Maximum Length Contact Name That Exceeds Normal Length Limits And Tests Field Validation",
+      "telephone": "012345678901234567890123456789012345",
+      "email": "maximum.length.email.address.that.exceeds.normal.length.limits@very.long.domain.name.com",
+      "vatNo": "GB12345678901234567890123456789012345",
+      "eoriNumber": "GB12345678901234567890123456789012345000"
+    },
+    "specialCharacters": {
+      "customerCode": "SPEC!@#",
+      "customerName": "Special Characters Test & Co. Ltd. <script>",
+      "address1": "123 Special & Characters St. <test>",
+      "town": "Test Town & Co.",
+      "contact": "John O'Brien & Associates",
+      "telephone": "+44 (0)1234-567-890 ext.123",
+      "email": "test+special@sub-domain.co.uk"
+    },
+    "unicodeCharacters": {
+      "customerCode": "UNICODE1",
+      "customerName": "Tëst Üñíçødé Cüstømér Naméé",
+      "address1": "123 Üñíçødé Ávénüé",
+      "town": "Tëst Töwñ",
+      "contact": "Jøhñ Døé",
+      "email": "tëst@üñíçødé.com"
+    },
+    "minimalData": {
+      "customerCode": "MIN",
+      "customerName": "Min",
+      "address1": "1",
+      "town": "T",
+      "postCode": "M1",
+      "contact": "C",
+      "telephone": "1",
+      "email": "m@t.co",
+      "vatNo": "GB1",
+      "eoriNumber": "GB1000"
+    }
+  },
+  "testEnvironment": {
+    "baseUrl": "${BASE_URL}",
+    "loginCredentials": {
+      "username": "${TEST_USER_USERNAME}",
+      "password": "${TEST_USER_PASSWORD}"
+    },
+    "waitTimeouts": {
+      "short": 5000,
+      "medium": 10000,
+      "long": 30000
+    },
+    "retryAttempts": 3
+  },
+  "dropdownOptions": {
+    "teams": [
+      "Operations",
+      "Americas",
+      "Europe DS",
+      "Europe SS",
+      "Nordics",
+      "Italia",
+      "Iberia",
+      "MEAI",
+      "SE Asia",
+      "North Asia"
+    ],
+    "countries": [
+      "GB",
+      "US",
+      "NL",
+      "DE",
+      "FR",
+      "ES",
+      "IT",
+      "SE",
+      "NO",
+      "DK",
+      "BE",
+      "IN",
+      "CN",
+      "SG",
+      "AE",
+      "CA"
+    ],
+    "billingOffices": [
+      "BTL UK",
+      "BTL US",
+      "BTL Netherlands",
+      "BTL Germany",
+      "BTL France",
+      "BTL Spain",
+      "BTL Italy"
+    ],
+    "customerGroups": [
+      "Standard Customer",
+      "VIP Customer",
+      "Quote Only Customer",
+      "Inactive Customer"
+    ],
+    "yesNoOptions": [
+      "Yes",
+      "No"
+    ]
+  }
+}

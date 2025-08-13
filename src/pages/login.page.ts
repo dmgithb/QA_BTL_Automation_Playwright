@@ -1,12 +1,13 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from './base.page';
+import { ConfigManager } from '../utils/config-manager';
 
 /**
- * Login page object for Bulktainer Logistics ERP System
+ * Login page object for the application
  */
 export class LoginPage extends BasePage {
   // Page URL
-  readonly url = 'https://training.bt-ms.com/MAIN-STAGE/erp.php/login';
+  readonly url = `${ConfigManager.BASE_URL}/login`;
 
   // Locators
   readonly usernameInput: Locator;
@@ -139,10 +140,10 @@ export class LoginPage extends BasePage {
    */
   async verifyPageTitle(): Promise<void> {
     const title = await this.getTitle();
-    if (title.includes('Bulktainer Logistics ERP System')) {
+    if (title.includes('Your Application Name')) {
       this.logger.info(`Page title verified: ${title}`);
     } else {
-      throw new Error(`Expected page title to contain 'Bulktainer Logistics ERP System' but got '${title}'`);
+      throw new Error(`Expected page title to contain 'Your Application Name' but got '${title}'`);
     }
   }
 }

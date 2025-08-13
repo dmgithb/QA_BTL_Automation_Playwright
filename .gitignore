@@ -6,23 +6,38 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 
+# Reports and Generated Files
+allure-results/
+allure-report/
+reports/
+!reports/.gitkeep
+
 # Environment variables and secrets
 .env
 .env.local
 .env.production
 .env.staging
 .env.development
+.env.*.local
 
 # Test data with sensitive information
 **/sensitive-data/
 **/credentials/
+**/secrets/
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+
+# Authentication state files (may contain session data)
+**/auth-state/
+**/.auth/
+**/storage-state.json
 
 # Logs
 *.log
 logs/
 test-results/
-allure-results/
-allure-report/
 
 # OS generated files
 .DS_Store
@@ -37,6 +52,18 @@ Thumbs.db
 .vscode/settings.json
 .idea/
 *.swp
+*.swo
+*~
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts
+dist/
+build/
+out/
 *.swo
 
 # Temporary files

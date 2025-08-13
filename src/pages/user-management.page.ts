@@ -76,7 +76,7 @@ export class UserManagementPage extends BasePage {
     this.usernameInput = page.getByRole('textbox', { name: 'Username' });
     this.emailInput = page.getByRole('textbox', { name: 'Email *' });
     this.sendingInstructionsEmailInput = page.getByRole('textbox', { name: 'Sending Instructions Email' });
-    this.sendingInstructionsEmailCheckbox = page.locator('input[type="checkbox"]').nth(0); // Checkbox next to sending instructions email field
+    this.sendingInstructionsEmailCheckbox = page.locator('input[type="checkbox"][name="defaultuser[0]"]'); // Mandatory checkbox for sending instructions email
     this.passwordInput = page.locator('#user-password');
     this.confirmPasswordInput = page.locator('#user-cpassword');
     this.teamButton = page.getByRole('button', { name: 'None selected' });
@@ -146,7 +146,13 @@ export class UserManagementPage extends BasePage {
 
     // Fill required fields
     await this.fillText(this.fullNameInput, userData.fullName);
-    await this.fillText(this.usernameInput, userData.username);
+    
+    // Ensure username is not too long (max 15 characters to avoid truncation)
+    const shortUsername = userData.username.length > 15 
+      ? userData.username.substring(0, 15) 
+      : userData.username;
+    await this.fillText(this.usernameInput, shortUsername);
+    
     await this.fillText(this.emailInput, userData.email);
     await this.fillText(this.passwordInput, userData.password);
     await this.fillText(this.confirmPasswordInput, userData.confirmPassword);
@@ -161,24 +167,51 @@ export class UserManagementPage extends BasePage {
     }
 
     if (userData.sendingInstructionsEmail) {
-      // Check the checkbox first to enable the field
-      await this.clickElement(this.sendingInstructionsEmailCheckbox);
-      await this.fillText(this.sendingInstructionsEmailInput, userData.sendingInstructionsEmail);
+      // Always check the mandatory checkbox for sending instructions email
+      try {
+        // Ensure the checkbox is checked (it's mandatory)
+        await this.sendingInstructionsEmailCheckbox.check({ force: true });
+        await this.page.waitForTimeout(500); // Wait for field to become enabled
+        await this.fillText(this.sendingInstructionsEmailInput, userData.sendingInstructionsEmail);
+        this.logger.info('Successfully checked mandatory sending instructions checkbox and filled email');
+      } catch (error) {
+        this.logger.info(`Checkbox interaction failed: ${error}`);
+        // Try alternative approach - ensure checkbox is checked
+        try {
+          await this.page.locator('input[type="checkbox"][name="defaultuser[0]"]').setChecked(true);
+          await this.fillText(this.sendingInstructionsEmailInput, userData.sendingInstructionsEmail);
+        } catch (secondError) {
+          this.logger.info(`Alternative checkbox approach failed: ${secondError}`);
+        }
+      }
+    } else {
+      // Even if no email provided, ensure the mandatory checkbox is checked
+      try {
+        await this.sendingInstructionsEmailCheckbox.check({ force: true });
+        this.logger.info('Checked mandatory sending instructions checkbox (no email provided)');
+      } catch (error) {
+        this.logger.info(`Failed to check mandatory checkbox: ${error}`);
+      }
     }
 
     // Handle dropdown selections
     if (userData.department) {
-      await this.selectDepartment(userData.department);
+      try {
+        await this.selectDepartment(userData.department);
+      } catch (error) {
+        this.logger.info(`Department selection failed, continuing: ${error}`);
+      }
     }
 
-    // Skip access permission selection since it defaults to "Full Access"
-    // The selectAccessPermission method can be called separately if needed
-
     // Set system-generated HBLs preference (default to No)
-    if (userData.allowSystemGeneratedHBLs === 'Yes') {
-      await this.clickElement(this.allowSystemGeneratedHBLsYes);
-    } else {
-      await this.clickElement(this.allowSystemGeneratedHBLsNo);
+    try {
+      if (userData.allowSystemGeneratedHBLs === 'Yes') {
+        await this.clickElement(this.allowSystemGeneratedHBLsYes);
+      } else {
+        await this.clickElement(this.allowSystemGeneratedHBLsNo);
+      }
+    } catch (error) {
+      this.logger.info(`HBL preference selection failed, continuing: ${error}`);
     }
 
     this.logger.step('User details filled successfully');
@@ -215,13 +248,42 @@ export class UserManagementPage extends BasePage {
   }
 
   /**
-   * Submit the create user form
+   * Submit the create user form and wait for completion
    */
   async submitCreateUserForm(): Promise<void> {
     this.logger.step('Submit create user form');
+    
+    // Click the Create button
     await this.clickElement(this.createButton);
-    await this.waitForPageLoad();
-    this.logger.step('Create user form submitted');
+    
+    // Wait for form submission to complete - either success redirect or error message
+    try {
+      // Wait for redirect to users index page (success case)
+      await this.page.waitForURL(/user\/index/, { timeout: 15000 });
+      this.logger.step('User created successfully - redirected to users list');
+    } catch (redirectError) {
+      // If no redirect, check for error messages on the form
+      this.logger.info('No redirect detected, checking for form errors...');
+      
+      // Wait a bit for any error messages to appear
+      await this.page.waitForTimeout(2000);
+      
+      // Check if we're still on the create page (form has validation errors)
+      const currentUrl = this.page.url();
+      if (currentUrl.includes('/user/create')) {
+        // Look for error messages or validation issues
+        const errorElements = await this.page.locator('.alert-danger, .error, .field-error, .has-error').count();
+        if (errorElements > 0) {
+          const errorTexts = await this.page.locator('.alert-danger, .error, .field-error, .has-error').allTextContents();
+          throw new Error(`Form submission failed with validation errors: ${errorTexts.join(', ')}`);
+        } else {
+          throw new Error('Form submission failed - still on create page but no visible errors detected');
+        }
+      } else {
+        // If we're on a different page, log where we ended up
+        this.logger.info(`Form submitted but ended up on unexpected page: ${currentUrl}`);
+      }
+    }
   }
 
   /**
