@@ -442,6 +442,12 @@ jobs:
             echo "📊 Artifacts copied to allure-report/test-results/"
             ls -la allure-report/
             ls -la allure-report/test-results/ 2>/dev/null || echo "No test-results directory"
+            
+            # Fix any absolute paths in Allure report for GitHub Pages
+            echo "🔧 Fixing paths for GitHub Pages deployment..."
+            find allure-report -name "*.html" -type f -exec sed -i 's|file:///home/runner/work/[^/]*/[^/]*/|./|g' {} \; 2>/dev/null || true
+            find allure-report -name "*.js" -type f -exec sed -i 's|file:///home/runner/work/[^/]*/[^/]*/|./|g' {} \; 2>/dev/null || true
+            echo "✅ Path fixing completed"
           else
             echo "⚠️ No test results found - creating empty report"
             mkdir -p allure-report
