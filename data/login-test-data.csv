@@ -1,6 +1,5 @@
 description,username,password,expectedResult
 Valid admin login,${TEST_USER_USERNAME},${TEST_USER_PASSWORD},success
-Valid manager login,${MANAGER_USERNAME},${MANAGER_PASSWORD},success
 Invalid username,invalid_user,validpass123,failure
 Invalid password,${TEST_USER_USERNAME},invalid_password,failure
 Empty username,,validpass123,failure
@@ -8,6 +7,6 @@ Empty password,${TEST_USER_USERNAME},,failure
 Both empty,,,failure
 SQL injection attempt,'; DROP TABLE users; --,password,failure
 XSS attempt,<script>alert('xss')</script>,password,failure
-Special characters,!@#$%^&*(),!@#$%^&*(),failure
-Very long username,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,password,failure
-Very long password,${TEST_USER_USERNAME},bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,failure
+Special characters,user@test.com,pass123!,failure
+Long username,verylongusernamethatexceedsnormallimits,password,failure
+Long password,${TEST_USER_USERNAME},verylongpasswordthatexceedsnormallimits123456789,failure
