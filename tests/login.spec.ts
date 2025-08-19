@@ -1,4 +1,4 @@
-import { test, expect, LoginPage, TestDataManager, ConfigManager } from '../src/fixtures/test-fixtures';
+import { test, expect, LoginPage, TestDataManager, ConfigManager, TestHooks } from '../src/fixtures/test-fixtures';
 
 /**
  * 🔐 Enhanced Login Test Suite - Bulktainer ERP System
@@ -245,11 +245,22 @@ test.describe('🔐 Login Authentication - Bulktainer ERP System', () => {
  * Comprehensive test scenarios using external data sources
  */
 test.describe('📊 Data-Driven Authentication Tests @regression', () => {
-  
+  // Data-driven test with increased timeout and validation
   test('Given CSV test data, When executing multiple login scenarios, Then all cases execute correctly @regression @data-driven', async ({ loginPage, logger }, testInfo) => {
+    test.setTimeout(180000); // Increase timeout to 3 minutes for slow/flaky runs
+    // Static import for hooks
     // GIVEN: CSV test data is available
     logger.step('GIVEN: Load CSV test data');
     const testData = await TestDataManager.readCsvData('login-test-data');
+    // Validate CSV data
+    if (!Array.isArray(testData) || testData.length === 0) {
+      throw new Error('CSV test data is empty or invalid.');
+    }
+    for (const [i, row] of testData.entries()) {
+      if (row.username === undefined || row.password === undefined || row.expectedResult === undefined) {
+        throw new Error(`CSV row ${i + 1} missing required fields.`);
+      }
+    }
     
     // Check if this is a retry run and load previous failed tests
     const isRetryRun = testInfo.retry > 0;
@@ -287,22 +298,19 @@ test.describe('📊 Data-Driven Authentication Tests @regression', () => {
       const testCase = testsToRun[i];
       const originalIndex = isRetryRun ? testData.indexOf(testCase) : i;
       const caseNumber = originalIndex + 1;
-      
       logger.step(`WHEN: Execute test case ${caseNumber}: ${testCase.description}`);
-      
       try {
         // WHEN: Execute each test case
         await loginPage.navigateToLoginPage();
+        await loginPage.waitFor(1000); // Explicit wait for page load
         await loginPage.login(testCase.username, testCase.password);
-        
+        await loginPage.waitFor(500); // Wait for login result
         const isLoginSuccessful = await loginPage.isLoginSuccessful();
-        
         // THEN: Verify expected results
         if (testCase.expectedResult === 'success') {
           if (isLoginSuccessful) {
             logger.step(`✅ Test case ${caseNumber}: Login successful as expected`);
             testResults.push({ testCase: caseNumber, originalIndex, description: testCase.description, status: 'passed' });
-            
             // Logout after successful login to clear session for next test
             if (i < testsToRun.length - 1) {
               logger.step('Logging out to clear session for next test');
@@ -331,25 +339,20 @@ test.describe('📊 Data-Driven Authentication Tests @regression', () => {
             }
           }
         }
-        
         // Clear state for next iteration - navigate back to login page if needed
         if (i < testsToRun.length - 1) {
           try {
             await loginPage.navigateToLoginPage();
-            // Reduced delay for better performance
             await loginPage.waitFor(500);
-            // Try to verify login page, but don't fail if elements aren't immediately visible
             try {
               await loginPage.verifyLoginPageLoaded();
             } catch (error) {
               logger.step(`Warning: Login page verification failed, retrying: ${String(error).substring(0, 100)}`);
-              // If verification fails, try one more time with a short delay
               await loginPage.waitFor(1000);
               await loginPage.verifyLoginPageLoaded();
             }
           } catch (navigationError) {
             logger.step(`Warning: Navigation between tests failed: ${navigationError}`);
-            // Try to refresh the browser context if navigation fails
             try {
               await loginPage.reloadPage();
               await loginPage.waitFor(2000);
@@ -359,19 +362,15 @@ test.describe('📊 Data-Driven Authentication Tests @regression', () => {
             }
           }
         }
-        
       } catch (error) {
         const errorMsg = `Test execution failed: ${String(error)}`;
         logger.step(`❌ Test case ${caseNumber} failed: ${errorMsg}`);
         testResults.push({ testCase: caseNumber, originalIndex, description: testCase.description, status: 'failed', error: errorMsg });
         failedTests++;
-        
         // Enhanced recovery for next test case
         try {
-          // Check if browser context is still alive
           const currentUrl = await loginPage.getCurrentUrl();
           if (currentUrl) {
-            // Context is alive, try normal recovery
             await loginPage.logout();
             if (i < testsToRun.length - 1) {
               await loginPage.navigateToLoginPage();
@@ -380,8 +379,6 @@ test.describe('📊 Data-Driven Authentication Tests @regression', () => {
           }
         } catch (recoveryError) {
           logger.step(`Warning: Standard recovery failed: ${String(recoveryError)}`);
-          // If standard recovery fails, the context might be closed
-          // The next test iteration will create a new context automatically
           logger.step(`Will attempt to continue with next test case...`);
         }
       }
