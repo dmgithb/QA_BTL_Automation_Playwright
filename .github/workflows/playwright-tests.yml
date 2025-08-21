@@ -91,7 +91,7 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "🎯 Main branch - tests will always run"
-          elif [[ "${{ steps.changes.outputs.tests }}" == "true" ]]; then
+          elif [[ "${{ needs.changes.outputs.tests }}" == "true" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "✅ Test-relevant changes detected"
           else
@@ -168,6 +168,12 @@ jobs:
           BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
           TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        
+          REGULAR_USER_USERNAME: ${{ secrets.REGULAR_USER_USERNAME }}
+          REGULAR_USER_PASSWORD: ${{ secrets.REGULAR_USER_PASSWORD }}
+
 
       - name: Generate HTML Report
         if: always()
@@ -246,7 +252,9 @@ jobs:
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
           ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          
+          REGULAR_USER_USERNAME: ${{ secrets.REGULAR_USER_USERNAME }}
+          REGULAR_USER_PASSWORD: ${{ secrets.REGULAR_USER_PASSWORD }}
+
       - name: Upload regression test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -297,7 +305,11 @@ jobs:
           BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
           TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          REGULAR_USER_USERNAME: ${{ secrets.REGULAR_USER_USERNAME }}
+          REGULAR_USER_PASSWORD: ${{ secrets.REGULAR_USER_PASSWORD }}
+
       - name: Upload BDD test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -348,7 +360,11 @@ jobs:
           BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
           TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          REGULAR_USER_USERNAME: ${{ secrets.REGULAR_USER_USERNAME }}
+          REGULAR_USER_PASSWORD: ${{ secrets.REGULAR_USER_PASSWORD }}
+
       - name: Upload performance test results
         uses: actions/upload-artifact@v4
         if: always()
