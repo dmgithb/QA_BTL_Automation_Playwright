@@ -49,8 +49,7 @@ test.describe('🔐 Login Authentication - Bulktainer ERP System', () => {
       expect(isLoginSuccessful).toBeTruthy();
       
       logger.step('Save authentication state for session reuse');
-      const { TestHooks } = await import('../src/fixtures/test-fixtures');
-      await TestHooks.saveAuthState(page, validUser.username);
+  await TestHooks.saveAuthState(page, validUser.username);
     });
 
     test('Given invalid credentials, When user attempts login, Then authentication fails @critical', async ({ loginPage, logger }) => {
