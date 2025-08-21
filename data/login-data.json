@@ -12,12 +12,7 @@
       "role": "administrator",
       "description": "Valid admin user"
     },
-    {
-      "username": "${MANAGER_USERNAME}",
-      "password": "${MANAGER_PASSWORD}",
-      "role": "manager",
-      "description": "Valid manager user"
-    },
+    
     {
       "username": "${REGULAR_USER_USERNAME}",
       "password": "${REGULAR_USER_PASSWORD}",

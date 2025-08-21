@@ -48,6 +48,11 @@ jobs:
           BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
           TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      
+          REGULAR_USER_USERNAME: ${{ secrets.REGULAR_USER_USERNAME }}
+          REGULAR_USER_PASSWORD: ${{ secrets.REGULAR_USER_PASSWORD }}
 
       - name: Generate HTML Report
         if: always()
