@@ -16,14 +16,12 @@ import { test, expect, LoginPage, TestDataManager, ConfigManager, TestHooks } fr
 test.describe('🔐 Login Authentication - Bulktainer ERP System', () => {
   
   test.beforeEach(async ({ page }, testInfo) => {
-    // Import test hooks for setup
-    const { TestHooks } = await import('../src/fixtures/test-fixtures');
+    // Use statically imported TestHooks for setup
     await TestHooks.beforeEach(page, testInfo);
   });
 
   test.afterEach(async ({ page }, testInfo) => {
-    // Import test hooks for cleanup
-    const { TestHooks } = await import('../src/fixtures/test-fixtures');
+    // Use statically imported TestHooks for cleanup
     await TestHooks.afterEach(page, testInfo);
   });
 
