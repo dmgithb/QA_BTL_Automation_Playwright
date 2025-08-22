@@ -53,7 +53,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
   PLAYWRIGHT_VERSION: '1.40.0'
 
 jobs:
@@ -117,6 +117,8 @@ jobs:
           npm ci
           npm run lint
         continue-on-error: true
+      - name: Install Playwright browsers
+        run: npx playwright install
 
   # ⚡ Fast feedback - Smoke tests
   smoke-tests:
