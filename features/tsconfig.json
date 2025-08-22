@@ -11,15 +11,15 @@
     "resolveJsonModule": true,
     "declaration": false,
     "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./",
-    "typeRoots": ["./node_modules/@types", "./types"],
+    "outDir": "../dist",
+    "rootDir": "../",
+    "typeRoots": ["../node_modules/@types", "../types"],
     "types": ["node", "@cucumber/cucumber"]
   },
   "include": [
-    "features/**/*",
-    "src/**/*",
-    "types/**/*"
+    "../features/**/*",
+    "../src/**/*",
+    "../types/**/*"
   ],
   "exclude": [
     "node_modules",

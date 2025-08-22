@@ -92,7 +92,7 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "🎯 Main branch - tests will always run"
-          elif [[ "${{ needs.changes.outputs.tests }}" == "true" ]]; then
+          elif [[ "${{ steps.changes.outputs.tests }}" == "true" ]]; then
             echo "should_run=true" >> $GITHUB_OUTPUT
             echo "✅ Test-relevant changes detected"
           else
@@ -205,7 +205,8 @@ jobs:
       needs.validate.outputs.should_run_tests == 'true' && 
       (needs.validate.outputs.test_suite == 'regression' || 
        needs.validate.outputs.test_suite == 'full' ||
-       github.event_name == 'pull_request')
+       github.event_name == 'pull_request' ||
+       needs.smoke-tests.result != 'skipped')
     
     steps:
       - name: Checkout code
