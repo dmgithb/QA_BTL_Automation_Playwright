@@ -97,7 +97,7 @@ test.describe('🔐 Login Authentication - Bulktainer ERP System', () => {
   // ========================================
   test.describe('💨 Smoke Tests @smoke', () => {
 
-    test('Given empty credentials, When user submits form, Then validation errors appear @smoke', async ({ loginPage, logger }) => {
+    test('Given empty credentials, When user submits form, Then validation error appear @smoke', async ({ loginPage, logger }) => {
       // GIVEN: User on login page with empty form
       logger.step('GIVEN: Navigate to login page');
       await loginPage.navigateToLoginPage();
