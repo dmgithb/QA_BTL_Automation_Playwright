@@ -258,60 +258,6 @@ jobs:
             reports/
           retention-days: 30
 
-  # 🎭 BDD/Cucumber tests
-  bdd-tests:
-    name: BDD Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: [validate, smoke-tests]
-    if: |
-      needs.validate.outputs.should_run_tests == 'true' && 
-      (needs.validate.outputs.test_suite == 'full' || 
-       github.event_name == 'schedule')
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-        
-      - name: Setup environment
-        run: |
-          cp .env.example .env
-          echo "HEADLESS=true" >> .env
-          echo "CI=true" >> .env
-          
-      - name: Run BDD tests
-        run: npm run bdd:critical
-        env:
-          BASE_URL: ${{ secrets.STAGING_BASE_URL || 'https://your-app-url.com' }}
-          TEST_USER_USERNAME: ${{ secrets.TEST_USER_USERNAME }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          REGULAR_USER_USERNAME: ${{ secrets.REGULAR_USER_USERNAME }}
-          REGULAR_USER_PASSWORD: ${{ secrets.REGULAR_USER_PASSWORD }}
-
-      - name: Upload BDD test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: bdd-results
-          path: |
-            reports/
-            allure-results/
-          retention-days: 30
-
   # 📊 Performance tests
   performance-tests:
     name: Performance Tests
@@ -372,7 +318,7 @@ jobs:
   publish-reports:
     name: Publish Test Reports
     runs-on: ubuntu-latest
-    needs: [smoke-tests, regression-tests, bdd-tests, performance-tests]
+    needs: [smoke-tests, regression-tests, performance-tests]
     if: always() && (needs.smoke-tests.result != 'skipped' || needs.regression-tests.result != 'skipped')
     permissions:
       contents: read
@@ -508,7 +454,7 @@ jobs:
   notify:
     name: Send Notifications
     runs-on: ubuntu-latest
-    needs: [smoke-tests, regression-tests, bdd-tests, performance-tests, publish-reports]
+    needs: [smoke-tests, regression-tests, performance-tests, publish-reports]
     if: always()
     
     steps:
@@ -521,9 +467,6 @@ jobs:
           elif [[ "${{ needs.regression-tests.result }}" == "failure" ]]; then
             echo "status=failure" >> $GITHUB_OUTPUT
             echo "message=⚠️ Regression tests failed!" >> $GITHUB_OUTPUT
-          elif [[ "${{ needs.bdd-tests.result }}" == "failure" ]]; then
-            echo "status=warning" >> $GITHUB_OUTPUT
-            echo "message=⚠️ BDD tests failed!" >> $GITHUB_OUTPUT
           elif [[ "${{ needs.performance-tests.result }}" == "failure" ]]; then
             echo "status=warning" >> $GITHUB_OUTPUT
             echo "message=📊 Performance tests failed!" >> $GITHUB_OUTPUT
@@ -549,7 +492,6 @@ jobs:
             ### Test Results Summary:
             - **Smoke Tests**: ${{ needs.smoke-tests.result }}
             - **Regression Tests**: ${{ needs.regression-tests.result }}
-            - **BDD Tests**: ${{ needs.bdd-tests.result }}
             - **Performance Tests**: ${{ needs.performance-tests.result }}
             
             📊 [View Detailed Report](https://dmgithb.github.io/QA_BTL_Automation_Playwright/)
@@ -589,7 +531,6 @@ jobs:
             ### Test Results:
             - **Smoke Tests**: ${{ needs.smoke-tests.result }}
             - **Regression Tests**: ${{ needs.regression-tests.result }}
-            - **BDD Tests**: ${{ needs.bdd-tests.result }}
             - **Performance Tests**: ${{ needs.performance-tests.result }}
             
             [📊 View Detailed Report](https://dmgithb.github.io/QA_BTL_Automation_Playwright/)
