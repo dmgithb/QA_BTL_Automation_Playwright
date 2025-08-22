@@ -124,7 +124,7 @@ jobs:
   # ⚡ Fast feedback - Smoke tests
   smoke-tests:
     name: Smoke Tests
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: validate
     if: needs.validate.outputs.should_run_tests == 'true'
