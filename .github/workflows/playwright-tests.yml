@@ -118,7 +118,7 @@ jobs:
           npm run lint
         continue-on-error: true
       - name: Install Playwright browsers
-        run: npx playwright install
+        run: npx playwright install --with-deps
 
   # ⚡ Fast feedback - Smoke tests
   smoke-tests:
