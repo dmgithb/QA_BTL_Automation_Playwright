@@ -31,7 +31,7 @@ class LoginHelper {
 let loginHelper;
 
 Given('I am logged into the ERP system as an administrator', async function () {
-  browser = await chromium.launch({ headless: false });
+  browser = await chromium.launch({ headless: process.env.CI ? true : true });
   const context = await browser.newContext();
   page = await context.newPage();
   

@@ -9,7 +9,7 @@ let browser;
 let page;
 
 Given('I navigate to the login page', async function () {
-  browser = await chromium.launch({ headless: false });
+  browser = await chromium.launch({ headless: process.env.CI ? true : true });
   const context = await browser.newContext();
   page = await context.newPage();
   await page.goto('https://training.bt-ms.com/MAIN-STAGE/erp.php/login');
