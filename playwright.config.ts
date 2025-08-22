@@ -63,7 +63,7 @@ export default defineConfig({
     },
     
     /* Headless mode */
-    headless: process.env.HEADLESS === 'true',
+    headless: process.env.CI ? true : process.env.HEADLESS === 'true',
     
     /* Ignore HTTPS errors */
     ignoreHTTPSErrors: true,
